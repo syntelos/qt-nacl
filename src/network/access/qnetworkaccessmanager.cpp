@@ -910,6 +910,12 @@ QNetworkReply *QNetworkAccessManager::createRequest(QNetworkAccessManager::Opera
         return new QNetworkReplyDataImpl(this, req, op);
     }
 
+#ifdef Q_OS_NACL
+    if (op == QNetworkAccessManager::GetOperation) {
+        return new QNetworkReplyPepperImpl(this, req, op);
+    }
+#endif
+
     // A request with QNetworkRequest::AlwaysCache does not need any bearer management
     QNetworkRequest::CacheLoadControl mode =
         static_cast<QNetworkRequest::CacheLoadControl>(

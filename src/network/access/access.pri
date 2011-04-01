@@ -66,4 +66,12 @@ SOURCES += \
     access/qhttpthreaddelegate.cpp \
     access/qhttpmultipart.cpp
 
+nacl {
+    HEADERS +=  access/qnetworkreplypepperimpl_p.h \
+                access/geturl_handler.h
+
+    SOURCES +=  access/qnetworkreplypepperimpl.cpp \
+                access/geturl_handler.cc
+}
+
 include($$PWD/../../3rdparty/zlib_dependency.pri)
