@@ -524,9 +524,6 @@ void QDeclarativeDataLoader::load(QDeclarativeDataBlob *blob)
         }
 
     } else {
-
-        qDebug() << "networkAccessManager" << blob->url();
-
         blob->m_manager = this;
         QNetworkReply *reply = m_engine->networkAccessManager()->get(QNetworkRequest(blob->m_url));
         QObject::connect(reply, SIGNAL(downloadProgress(qint64,qint64)), 
