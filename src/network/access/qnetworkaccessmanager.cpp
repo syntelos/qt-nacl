@@ -596,7 +596,6 @@ QNetworkReply *QNetworkAccessManager::head(const QNetworkRequest &request)
 */
 QNetworkReply *QNetworkAccessManager::get(const QNetworkRequest &request)
 {
-    qDebug() << "QNetworkAccessManager::get" << request.url();
     return d_func()->postProcess(createRequest(QNetworkAccessManager::GetOperation, request));
 }
 
@@ -916,7 +915,6 @@ QNetworkReply *QNetworkAccessManager::createRequest(QNetworkAccessManager::Opera
 
 #ifdef Q_OS_NACL
     if (op == QNetworkAccessManager::GetOperation) {
-        qDebug() << "new QNetworkReplyDataImpl" << req.url();
         return new QNetworkReplyPepperImpl(this, req, op);
     }
 #endif
