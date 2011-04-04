@@ -3609,6 +3609,12 @@ void qtRunOnPepperThread(void (*fn)(void *), void *data)
 
 Q_CORE_EXPORT pp::Instance *qtPepperInstance;
 
+Q_CORE_EXPORT QObject *qtScriptableObject = 0;
+void setScriptableObject(QObject *object)
+{
+    qtScriptableObject = object;
+}
+
 #endif
 
 QT_END_NAMESPACE

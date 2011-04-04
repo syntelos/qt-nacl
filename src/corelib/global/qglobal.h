@@ -2764,6 +2764,8 @@ QT_LICENSED_MODULE(DBus)
 
 #ifdef Q_OS_NACL
     void qtRunOnPepperThread(void (*fn)(void *), void *data);
+    class QObject;
+    void setScriptableObject(QObject *object);
 #endif
 
 QT_END_NAMESPACE
