@@ -896,6 +896,15 @@ void QDeclarativeTypeData::dataReceived(const QByteArray &data)
         }
     }
 
+#ifdef Q_OS_NACL
+    {
+        // treat relative urls as network urls: get qmldir
+        QUrl importUrl = finalUrl().resolved(QUrl(QLatin1String("qmldir")));
+        QDeclarativeQmldirData *data = typeLoader()->getQmldir(importUrl);
+        addDependency(data);
+        m_qmldirs << data;
+    }
+#else
     if (!finalUrl().scheme().isEmpty()) {
         QUrl importUrl = finalUrl().resolved(QUrl(QLatin1String("qmldir")));
         if (QDeclarativeEnginePrivate::urlToLocalFileOrQrc(importUrl).isEmpty()) {
@@ -904,6 +913,7 @@ void QDeclarativeTypeData::dataReceived(const QByteArray &data)
             m_qmldirs << data;
         }
     }
+#endif
 }
 
 void QDeclarativeTypeData::allDependenciesDone()
