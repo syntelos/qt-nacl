@@ -213,9 +213,6 @@
 
 
 /* Painting */
-#ifndef QT_NO_COLORNAMES
-#  define QT_NO_COLORNAMES
-#endif
 #ifndef QT_NO_DIRECTPAINTER
 #  define QT_NO_DIRECTPAINTER
 #endif
