@@ -712,7 +712,7 @@ namespace JSC {
             *this = JSValue(globalData, static_cast<double>(i));
             return;
         }
-        *this = JSValue(globalData, static_cast<unsigned int>(i));
+        *this = JSValue(globalData, static_cast<int>(i));
     }
 
     inline bool JSValue::isNumber() const
