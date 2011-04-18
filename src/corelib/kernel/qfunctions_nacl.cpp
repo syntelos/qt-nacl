@@ -148,6 +148,60 @@ off64_t lseek64(int, off_t, int)
     return 0;
 }
 
+int chmod(const char *, mode_t)
+{
+    qWarning("qfunctions_nacl.cpp: unimplemented chmod called");
+    return 0;
+}
+
+ssize_t readlink(const char *path, char *buf, int)
+{
+    qWarning("qfunctions_nacl.cpp: unimplemented readlink called");
+    return 0;
+}
+
+int symlink(const char *, const char *)
+{
+    qWarning("qfunctions_nacl.cpp: unimplemented symlink called");
+    return 0;
+}
+
+int link(const char *oldpath, const char *newpath)
+{
+    qWarning("qfunctions_nacl.cpp: unimplemented link called");
+    return 0;
+}
+
+int unlink(const char *)
+{
+    qWarning("qfunctions_nacl.cpp: unimplemented unlink called");
+    return 0;
+}
+
+char *getcwd(char *, size_t)
+{
+    qWarning("qfunctions_nacl.cpp: unimplemented getcwd called");
+    return 0;
+}
+
+int chdir(const char *)
+{
+    qWarning("qfunctions_nacl.cpp: unimplemented chdir called");
+    return 0;
+}
+
+int mkdir(const char *, mode_t)
+{
+    qWarning("qfunctions_nacl.cpp: unimplemented mkdir called");
+    return 0;
+}
+
+int rmdir(const char *)
+{
+    qWarning("qfunctions_nacl.cpp: unimplemented rmdir called");
+    return 0;
+}
+
 } // Extern C
 
 int select(int, fd_set *, fd_set *, fd_set *, struct timeval *)
