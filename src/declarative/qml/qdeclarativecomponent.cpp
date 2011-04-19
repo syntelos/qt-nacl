@@ -520,14 +520,14 @@ void QDeclarativeComponent::loadUrl(const QUrl &url)
 
     d->clear();
 
-#ifndef Q_OS_NACL
-    // don't resolve relative urls for nacl,
-    // we want to load them from the network.
     if ((url.isRelative() && !url.isEmpty())
-    || url.scheme() == QLatin1String("file")) // Workaround QTBUG-11929
+    || url.scheme() == QLatin1String("file") // Workaround QTBUG-11929
+#ifdef Q_OS_NACL
+    || (d->engine->baseUrl().scheme().startsWith(QLatin1String("http")))
+#endif
+    )
         d->url = d->engine->baseUrl().resolved(url);
     else
-#endif
         d->url = url;
 
     if (url.isEmpty()) {
