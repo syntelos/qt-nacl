@@ -106,7 +106,7 @@ QNetworkReplyPepperImpl::QNetworkReplyPepperImpl(QObject *parent, const QNetwork
     qtRunOnPepperThread(pepperLoadData, this);
     d->dataReady.wait(&d->mutex);
 
-    qDebug() << "NetworkReplyPepperImpl::loaded" <<req.url() << d->data.count();
+    //qDebug() << "NetworkReplyPepperImpl::loaded" <<req.url() << d->data.count();
 
     setFinished(true);
     QNetworkReply::open(QIODevice::ReadOnly);

@@ -487,8 +487,6 @@ Load the provided \a blob from the network or filesystem.
 */
 void QDeclarativeDataLoader::load(QDeclarativeDataBlob *blob)
 {
-    qDebug() << "QDeclarativeDataLoader::load" << blob->url();
-
     Q_ASSERT(blob->status() == QDeclarativeDataBlob::Null);
     Q_ASSERT(blob->m_manager == 0);
 
