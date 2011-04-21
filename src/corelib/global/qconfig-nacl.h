@@ -136,9 +136,6 @@
 #endif
 
 /* Kernel */
-#ifndef QT_NO_CSSPARSER
-#  define QT_NO_CSSPARSER
-#endif
 #ifndef QT_NO_CURSOR
 #  define QT_NO_CURSOR
 #endif
@@ -171,15 +168,6 @@
 #endif
 #ifndef QT_NO_CONCURRENT
 #  define QT_NO_CONCURRENT
-#endif
-#ifndef QT_NO_XMLSTREAM
-#  define QT_NO_XMLSTREAM
-#endif
-#ifndef QT_NO_XMLSTREAMREADER
-#  define QT_NO_XMLSTREAMREADER
-#endif
-#ifndef QT_NO_XMLSTREAMWRITER
-#  define QT_NO_XMLSTREAMWRITER
 #endif
 
 /* Networking */

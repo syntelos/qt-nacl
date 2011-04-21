@@ -86,6 +86,7 @@ int QNativeSocketEnginePrivate::nativeAccept()
     return 0;
 }
 
+#ifndef QT_NO_NETWORKINTERFACE
 
 bool QNativeSocketEnginePrivate::nativeJoinMulticastGroup(const QHostAddress &groupAddress,
                                                           const QNetworkInterface &interface)
@@ -98,6 +99,8 @@ bool QNativeSocketEnginePrivate::nativeLeaveMulticastGroup(const QHostAddress &g
 {
     return false;
 }
+
+#endif
 
 qint64 QNativeSocketEnginePrivate::nativeBytesAvailable() const
 {
