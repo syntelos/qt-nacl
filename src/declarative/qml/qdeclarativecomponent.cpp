@@ -520,15 +520,17 @@ void QDeclarativeComponent::loadUrl(const QUrl &url)
 
     d->clear();
 
+#ifdef Q_OS_NACL    // hack to pass relative urls through unchanged,
+    d->url = url;   // typeloader will load them from the network.
+#else
     if ((url.isRelative() && !url.isEmpty())
     || url.scheme() == QLatin1String("file") // Workaround QTBUG-11929
-#ifdef Q_OS_NACL
     || (d->engine->baseUrl().scheme().startsWith(QLatin1String("http")))
-#endif
     )
         d->url = d->engine->baseUrl().resolved(url);
     else
         d->url = url;
+#endif
 
     if (url.isEmpty()) {
         QDeclarativeError error;
