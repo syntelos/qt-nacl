@@ -3614,6 +3614,7 @@ void setScriptableObject(QObject *object)
 {
     qtScriptableObject = object;
 }
+Q_CORE_EXPORT bool qt_pepper_eventdispatcher_use_timed_wait = false;
 
 #endif
 

@@ -930,9 +930,8 @@ bool QEventDispatcherUNIX::processEvents(QEventLoop::ProcessEventsFlags flags)
 
 #ifdef Q_OS_NACL
         nevents = 0;
-//  ### crashes when QtDeclarative is used.
-//        if (canWait && qt_pepper_wait)
-//            qt_pepper_wait(tm->tv_usec / 1000 + tm->tv_sec * 1000);
+        if (canWait && qt_pepper_wait)
+            qt_pepper_wait(tm->tv_usec / 1000 + tm->tv_sec * 1000);
 #else
         nevents = d->doSelect(flags, tm);
 #endif
