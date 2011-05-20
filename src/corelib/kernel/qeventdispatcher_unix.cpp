@@ -930,7 +930,12 @@ bool QEventDispatcherUNIX::processEvents(QEventLoop::ProcessEventsFlags flags)
 
 #ifdef Q_OS_NACL
         nevents = 0;
-        if (canWait && qt_pepper_wait)
+//      ### calling qt_pepper_wait crashes for QuickSalt.
+//          (the crash happens at the call, before
+//           qt_pepper_wait is entered. Go figure.)
+
+    extern bool qt_pepper_eventdispatcher_use_timed_wait;
+    if (qt_pepper_eventdispatcher_use_timed_wait && canWait && qt_pepper_wait)
             qt_pepper_wait(tm->tv_usec / 1000 + tm->tv_sec * 1000);
 #else
         nevents = d->doSelect(flags, tm);
