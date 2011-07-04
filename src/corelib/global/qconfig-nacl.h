@@ -68,9 +68,6 @@
 
 
 /* File I/O */
-#ifndef QT_NO_DOM
-#  define QT_NO_DOM
-#endif
 #ifndef QT_NO_FILESYSTEMWATCHER
 #  define QT_NO_FILESYSTEMWATCHER
 #endif
@@ -283,23 +280,6 @@
 #endif
 #ifndef QT_NO_QWS_QPF
 #  define QT_NO_QWS_QPF
-#endif
-
-/* SVG */
-#ifndef QT_NO_SVG
-#  define QT_NO_SVG
-#endif
-#ifndef QT_NO_GRAPHICSSVGITEM
-#  define QT_NO_GRAPHICSSVGITEM
-#endif
-#ifndef QT_NO_SVGGENERATOR
-#  define QT_NO_SVGGENERATOR
-#endif
-#ifndef QT_NO_SVGRENDERER
-#  define QT_NO_SVGRENDERER
-#endif
-#ifndef QT_NO_SVGWIDGET
-#  define QT_NO_SVGWIDGET
 #endif
 
 /* Styles */
