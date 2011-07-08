@@ -230,7 +230,21 @@ inline bool qCompare(QFlags<T> const &t1, int const &t2, const char *actual, con
 
 }
 QT_END_NAMESPACE
+#ifdef Q_OS_NACL
+#define QTEST_APPLESS_MAIN(TestObject) \
+int qt_pepper_main(int argc, char *argv[]) \
+{ \
+    TestObject tc; \
+    return QTest::qExec(&tc, argc, argv); \
+}
 
+#define QTEST_NOOP_MAIN \
+int qt_pepper_main(int argc, char *argv[]) \
+{ \
+    QObject tc; \
+    return QTest::qExec(&tc, argc, argv); \
+}
+#else
 #define QTEST_APPLESS_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
 { \
@@ -244,7 +258,7 @@ int main(int argc, char *argv[]) \
     QObject tc; \
     return QTest::qExec(&tc, argc, argv); \
 }
-
+#endif
 #include <QtTest/qtestsystem.h>
 
 #ifdef QT_GUI_LIB
@@ -257,6 +271,18 @@ int main(int argc, char *argv[]) \
 #  define QTEST_DISABLE_KEYPAD_NAVIGATION
 #endif
 
+#ifdef Q_OS_NACL
+#define QTEST_MAIN(TestObject) \
+int qt_pepper_main(int argc, char *argv[]) \
+{ \
+    QApplication app(argc, argv); \
+    QTEST_DISABLE_KEYPAD_NAVIGATION \
+    TestObject tc; \
+    return QTest::qExec(&tc, argc, argv); \
+}
+
+#else
+
 #define QTEST_MAIN(TestObject) \
 int main(int argc, char *argv[]) \
 { \
@@ -265,6 +291,8 @@ int main(int argc, char *argv[]) \
     TestObject tc; \
     return QTest::qExec(&tc, argc, argv); \
 }
+
+#endif //Q_OS_NACL
 
 #else
 

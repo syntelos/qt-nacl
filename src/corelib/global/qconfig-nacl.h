@@ -48,12 +48,6 @@
 #ifndef QT_NO_STL
 #  define QT_NO_STL
 #endif
-#ifndef QT_NO_TEXTDATE
-#  define QT_NO_TEXTDATE
-#endif
-#ifndef QT_NO_DATESTRING
-#  define QT_NO_DATESTRING
-#endif
 
 /* Dialogs */
 #ifndef QT_NO_FILEDIALOG

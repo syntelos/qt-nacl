@@ -1712,7 +1712,7 @@ static void qInvokeTestMethods(QObject *testObject)
     QTestLog::stopLogging();
 }
 
-#if defined(Q_OS_UNIX) && !defined(Q_OS_SYMBIAN)
+#if defined(Q_OS_UNIX) && !defined(Q_OS_SYMBIAN) && !defined(Q_OS_NACL)
 class FatalSignalHandler
 {
 public:
@@ -1800,7 +1800,7 @@ FatalSignalHandler::~FatalSignalHandler()
     }
 }
 
-#endif
+#endif // && !defined(Q_OS_SYMBIAN) && !defined(Q_OS_NACL)
 
 
 } // namespace
@@ -1911,7 +1911,7 @@ int QTest::qExec(QObject *testObject, int argc, char **argv)
     } else
 #endif
     {
-#if defined(Q_OS_UNIX) && !defined(Q_OS_SYMBIAN)
+#if defined(Q_OS_UNIX) && !defined(Q_OS_SYMBIAN) && !defined(Q_OS_NACL)
         QScopedPointer<FatalSignalHandler> handler;
         if (!noCrashHandler)
             handler.reset(new FatalSignalHandler);
@@ -2190,6 +2190,8 @@ void QTest::qSleep(int ms)
 
 #ifdef Q_OS_WIN
     Sleep(uint(ms));
+#elif defined(Q_OS_NACL)
+    qWarning("Unimplemented: QTest::qSleep");
 #else
     struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
     nanosleep(&ts, NULL);
