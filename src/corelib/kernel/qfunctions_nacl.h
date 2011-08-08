@@ -50,9 +50,11 @@
 
 // pthread
 #include <pthread.h>
-#define PTHREAD_CANCEL_DISABLE 1
-#define PTHREAD_CANCEL_ENABLE 2
-#define PTHREAD_INHERIT_SCHED 3
+#ifndef PTHREAD_CANCEL_DISABLE
+#  define PTHREAD_CANCEL_DISABLE 1
+#  define PTHREAD_CANCEL_ENABLE 2
+#  define PTHREAD_INHERIT_SCHED 3
+#endif
 
 QT_BEGIN_HEADER
 
@@ -62,8 +64,10 @@ QT_MODULE(Core)
 
 extern "C" {
 
+#ifndef pthread_cleanup_push 
 void pthread_cleanup_push(void (*handler)(void *), void *arg);
 void pthread_cleanup_pop(int execute);
+#endif
 
 int pthread_setcancelstate(int state, int *oldstate);
 int pthread_setcanceltype(int type, int *oldtype);

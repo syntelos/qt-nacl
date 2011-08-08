@@ -46,7 +46,9 @@
 
 // Get Qt defines/settings
 
+#ifndef _POSIX_TIMERS
 #define _POSIX_TIMERS
+#endif
 
 #include "qglobal.h"
 
@@ -58,11 +60,14 @@
 #define QT_NO_SOCKET_H
 
 #define DIR void *
+#ifndef PATH_MAX
 #define PATH_MAX 256
+#endif
 
 #include "../../common/posix/qplatformdefs.h"
 #include "qfunctions_nacl.h"
 #include <pthread.h>
+#include <sys/time.h>
 
 #undef QT_LSTAT
 #define QT_LSTAT                QT_STAT

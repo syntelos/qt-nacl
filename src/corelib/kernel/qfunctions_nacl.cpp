@@ -64,6 +64,9 @@
 
 extern "C" {
 
+
+#ifndef pthread_cleanup_push 
+
 void pthread_cleanup_push(void (*)(void *), void *)
 {
 
@@ -73,6 +76,8 @@ void pthread_cleanup_pop(int)
 {
 
 }
+
+#endif
 
 int pthread_setcancelstate(int, int *)
 {
