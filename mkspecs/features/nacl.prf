@@ -1,3 +1,0 @@
-include($$PWD/../../src/plugins/platforms/nacl/ppapi-plugin.pri)
-
-

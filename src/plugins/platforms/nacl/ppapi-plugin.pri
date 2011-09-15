@@ -1,5 +1,4 @@
-# the font pri files expext QT_SOURCE_TREE, which does not seem to be set.
-QT_SOURCE_TREE=$$PWD/../../../../
+include($$PWD/../../qpluginbase.pri)
 include($$PWD/../fontdatabases/genericunix/genericunix.pri)
 
 INCLUDEPATH += $$PWD
