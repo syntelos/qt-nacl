@@ -1,3 +1,7 @@
-exists($$PWD/../../src/plugins/platforms/nacl/ppapi-plugin.pri) {
-    include ($$PWD/../../src/plugins/platforms/nacl/ppapi-plugin.pri)
+
+QT_SOURCE_TREE = $$fromfile($$PWD/../../.qmake.cache,QT_SOURCE_TREE)
+PLUGIN_PRI=$$QT_SOURCE_TREE/src/plugins/platforms/nacl/ppapi-plugin.pri
+
+exists($$PLUGIN_PRI) {
+    include ($$PLUGIN_PRI)
 }
