@@ -1,3 +1,4 @@
+QT_SOURCE_TREE=$$PWD/../../../..
 include($$PWD/../../qpluginbase.pri)
 include($$PWD/../fontdatabases/genericunix/genericunix.pri)
 
@@ -35,4 +36,5 @@ CONFIG += static
 LIBS +=  -lppruntime -lppapi_cpp -lsrpc -limc_syscalls -lplatform -lgio -lppapi_gles2 -m32
 OBJECTS_DIR = .obj/debug-static
 MOC_DIR = .moc/debug-static
+TEMPLATE = app
 

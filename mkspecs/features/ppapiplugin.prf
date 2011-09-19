@@ -1,0 +1,3 @@
+exists($$PWD/../../src/plugins/platforms/nacl/ppapi-plugin.pri) {
+    include ($$PWD/../../src/plugins/platforms/nacl/ppapi-plugin.pri)
+}

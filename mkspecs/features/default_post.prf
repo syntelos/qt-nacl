@@ -120,3 +120,9 @@ contains(CONFIG, lupdate_run):contains(CONFIG, localize_deployment) {
     equals($$list($$last(TEMPLATE)), app): SOURCES += $$[QT_INSTALL_DATA]/mkspecs/common/symbian/appCaptionForTranslation.cpp
     SOURCES += $$[QT_INSTALL_DATA]/mkspecs/common/symbian/packageNameForTranslation.cpp
 }
+
+# add the ppapi-plugin files to the build for nacl applications
+# (and not for libraries and the host tools)
+contains(QT_CONFIG, nacl):contains(TEMPLATE, app):!contains(TARGET, moc):!contains(TARGET, uic):!contains(TARGET, rcc):!contains(TARGET, uic3){
+    load(ppapiplugin)
+}
