@@ -1,4 +1,3 @@
-QT_SOURCE_TREE=$$PWD/../../../..
 include($$PWD/../../qpluginbase.pri)
 include($$PWD/../fontdatabases/genericunix/genericunix.pri)
 
@@ -33,7 +32,7 @@ HEADERS += $$PWD/peppereventtranslator.h \
 RESOURCES += fonts.qrc
 
 CONFIG += static
-LIBS +=  -lppruntime -lppapi_cpp -lsrpc -limc_syscalls -lplatform -lgio -lppapi_gles2 -m32
+LIBS += -lppapi -lppapi_cpp -lppapi_gles2
 OBJECTS_DIR = .obj/debug-static
 MOC_DIR = .moc/debug-static
 TEMPLATE = app
