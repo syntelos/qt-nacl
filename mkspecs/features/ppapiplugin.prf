@@ -1,7 +1,10 @@
+# find ppapi-plugin.pri in the qt sources, by
+# 1) finding .qmake.cache
+QMAKE_CACHE= $$[QT_INSTALL_DATA]/.qmake.cache
+# 2) extracting the QT_SOURCE_TREE variable
+QT_SOURCE_TREE = $$fromfile($$QMAKE_CACHE,QT_SOURCE_TREE)
 
-QT_SOURCE_TREE = $$fromfile($$PWD/../../.qmake.cache,QT_SOURCE_TREE)
 PLUGIN_PRI=$$QT_SOURCE_TREE/src/plugins/platforms/nacl/ppapi-plugin.pri
-
 exists($$PLUGIN_PRI) {
     include ($$PLUGIN_PRI)
 }
