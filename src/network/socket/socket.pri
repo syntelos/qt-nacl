@@ -27,24 +27,12 @@ SOURCES += socket/qabstractsocketengine.cpp \
 symbian:SOURCES += socket/qsymbiansocketengine.cpp
 symbian:HEADERS += socket/qsymbiansocketengine_p.h
 # On others we use QNativeSocketEngine
-!symbian:SOURCES += socket/qnativesocketengine.cpp
-!symbian:HEADERS += socket/qnativesocketengine_p.h
-
-unix:!symbian: {
-    SOURCES += socket/qnativesocketengine_unix.cpp \
+unix:!symbian:!nacl:SOURCES += socket/qnativesocketengine_unix.cpp \
                 socket/qlocalsocket_unix.cpp \
                 socket/qlocalserver_unix.cpp
-}
-
-symbian: {
-    SOURCES += socket/qlocalsocket_tcp.cpp \
-               socket/qlocalserver_tcp.cpp
-
-    DEFINES += QT_LOCALSOCKET_TCP
-}
-
-unix:HEADERS += \
+unix:!symbian:!nacl:HEADERS += \
                 socket/qnet_unix_p.h
+nacl:SOURCES += socket/qnativesocketengine_unix.cpp
 
 win32:SOURCES += socket/qnativesocketengine_win.cpp \
                 socket/qlocalsocket_win.cpp \

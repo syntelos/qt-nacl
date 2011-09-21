@@ -31,11 +31,15 @@
 #include <unistd.h>
 #include <sys/mman.h>
 
+#if OS(NACL)
+#define MAP_ANON 0
+#endif
+
 namespace JSC {
 
 void MarkStack::initializePagesize()
 {
-    MarkStack::s_pageSize = getpagesize();
+    MarkStack::s_pageSize =  4 * 4096; //BLOCK_SIZE; // getpagesize();
 }
 
 void* MarkStack::allocateStack(size_t size)

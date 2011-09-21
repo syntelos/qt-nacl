@@ -75,9 +75,9 @@
 
 #include <QtCore/qmetaobject.h>
 #include <QScriptClass>
-#include <QNetworkReply>
-#include <QNetworkRequest>
-#include <QNetworkAccessManager>
+//#include <QNetworkReply>
+//#include <QNetworkRequest>
+//#include <QNetworkAccessManager>
 #include <QDesktopServices>
 #include <QTimer>
 #include <QList>

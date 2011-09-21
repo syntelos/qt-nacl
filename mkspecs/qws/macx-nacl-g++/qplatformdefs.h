@@ -42,6 +42,7 @@
 #ifndef QPLATFORMDEFS_H
 #define QPLATFORMDEFS_H
 
+#include "../../common/pepper/qplatformdefs.h"
 
 #define _POSIX_TIMERS
 

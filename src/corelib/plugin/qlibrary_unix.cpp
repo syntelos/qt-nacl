@@ -288,6 +288,8 @@ void* QLibraryPrivate::resolve_sys(const char* symbol)
         address = 0;
 #elif defined (QT_NO_DYNAMIC_LIBRARY)
     void *address = 0;
+#elif defined(Q_OS_NACL)
+    void *address = 0;
 #else
     void* address = dlsym(pHnd, symbol);
 #endif

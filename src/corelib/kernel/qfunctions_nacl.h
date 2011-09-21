@@ -46,6 +46,8 @@
 
 #include <sys/types.h>
 
+#include <sys/types.h>
+
 // pthread
 #include <pthread.h>
 #define PTHREAD_CANCEL_DISABLE 1

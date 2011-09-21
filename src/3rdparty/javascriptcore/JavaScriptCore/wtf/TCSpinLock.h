@@ -54,6 +54,11 @@
 #include <windows.h>
 #endif
 
+#if OS(NACL)
+#include <sys/nacl_syscalls.h>
+#endif
+
+
 static void TCMalloc_SlowLock(volatile unsigned int* lockword);
 
 // The following is a struct so that it can be initialized at compile time

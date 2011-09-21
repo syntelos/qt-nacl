@@ -337,11 +337,10 @@ earlyArgParse()
             fi
             ;;
         nacl)
-            echo "Using NaCl at $VAL."
+            echo "Using NaCl"
             PLATFORM_X11=no
             PLATFORM_MAC=no
             PLATFORM_QWS=no
-            CFG_NACL_PATH=$VAL
             CFG_EMBEDDED=nacl
             ;;
 
@@ -965,24 +964,13 @@ if [ "$CFG_EMBEDDED" = "nacl" ]; then
     echo "-qconfig nacl"
     CFG_QCONFIG=nacl
 
-    if [ `uname` = "Linux" ]; then
-        I_FLAGS="$I_FLAGS -I${CFG_NACL_PATH}/toolchain/linux_x86/sdk/nacl-sdk/include"
-        L_FLAGS="$L_FLAGS -I${CFG_NACL_PATH}/toolchain/linux_x86/sdk/nacl-sdk/lib"
-    else
-        I_FLAGS="$I_FLAGS -I${CFG_NACL_PATH}/toolchain/mac_x86/sdk/nacl-sdk/include"
-        L_FLAGS="$L_FLAGS -I${CFG_NACL_PATH}/toolchain/mac_x86/sdk/nacl-sdk/lib"
-    fi
-
-    echo "-no-multimedia -no-webkit -no-phonon -no-nultimedia -no-mediaservices -no-xmlpatterns -no-script -no-sql-sqlite -nomake tests"
+    echo "-no-multimedia -no-webkit -no-phonon -no-mediaservices -no-xmlpatterns -no-scripttools -nomake tests"
     CFG_MULTIMEDIA=no
     CFG_WEBKIT=no
     CFG_PHONON=no
-    CFG_MULTIMEDIA=no
     CFG_MEDIASERVICES=no
     CFG_XMLPATTERNS=no
-    CFG_SCRIPT=no
-    CFG_SQLITE=no
-    CFG_SQL_sqlite=no
+    CFG_SCRIPTTOOLS=no
     CFG_LIBTIFF=no
     CFG_NOBUILD_PARTS="$CFG_NOBUILD_PARTS tests"
     QT_CONFIG="$QT_CONFIG nacl"

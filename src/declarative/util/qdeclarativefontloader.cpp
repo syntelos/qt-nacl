@@ -47,8 +47,8 @@
 #include <QStringList>
 #include <QUrl>
 #include <QDebug>
-#include <QNetworkRequest>
-#include <QNetworkReply>
+//#include <QNetworkRequest>
+//#include <QNetworkReply>
 #include <QFontDatabase>
 
 #include <private/qobject_p.h>

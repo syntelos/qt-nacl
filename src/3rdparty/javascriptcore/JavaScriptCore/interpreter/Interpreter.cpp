@@ -2572,7 +2572,7 @@ JSValue Interpreter::privateExecute(ExecutionFlag flag, RegisterFile* registerFi
                 double dValue = 0;
                 JSValue jsValue = callFrame->r(value).jsValue();
                 if (jsValue.isInt32())
-                    jsByteArray->setIndex(i, jsValue.asInt32());
+                    jsByteArray->setIndex(i, int(jsValue.asInt32()));
                 else if (jsValue.getNumber(dValue))
                     jsByteArray->setIndex(i, dValue);
                 else

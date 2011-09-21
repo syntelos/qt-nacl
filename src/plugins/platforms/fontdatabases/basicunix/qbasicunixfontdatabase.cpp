@@ -135,7 +135,8 @@ static QSupportedWritingSystems determineWritingSystemsFromTrueTypeBits(quint32 
 {
     QSupportedWritingSystems writingSystems;
     bool hasScript = false;
-
+// ### bit twiddling triggers validation errors.
+#ifndef Q_OS_NACL
     int i;
     for(i = 0; i < QFontDatabase::WritingSystemsCount; i++) {
         int bit = requiredUnicodeBits[i][0];
@@ -153,6 +154,7 @@ static QSupportedWritingSystems determineWritingSystemsFromTrueTypeBits(quint32 
             }
         }
     }
+#endif
     if(codePageRange[0] & (1 << SimplifiedChineseCsbBit)) {
         writingSystems.setSupported(QFontDatabase::SimplifiedChinese);
         hasScript = true;

@@ -3599,4 +3599,16 @@ int qt_symbian_exception2Error(const std::exception& aThrow)
 }
 #endif
 
+#ifdef Q_OS_NACL
+Q_CORE_EXPORT void (*qtRunOnPepperThreadPointer)(void (*fn)(void *), void *);
+void qtRunOnPepperThread(void (*fn)(void *), void *data)
+{
+    if (qtRunOnPepperThreadPointer)
+        qtRunOnPepperThreadPointer(fn, data);
+}
+
+Q_CORE_EXPORT pp::Instance *qtPepperInstance;
+
+#endif
+
 QT_END_NAMESPACE

@@ -50,7 +50,7 @@
 #include <QCoreApplication>
 #include <QImageReader>
 #include <QHash>
-#include <QNetworkReply>
+//#include <QNetworkReply>
 #include <QPixmapCache>
 #include <QFile>
 #include <QThread>
@@ -61,7 +61,7 @@
 #include <QWaitCondition>
 #include <QtCore/qdebug.h>
 #include <private/qobject_p.h>
-#include <QSslError>
+//#include <QSslError>
 
 #define IMAGEREQUEST_MAX_REQUEST_COUNT       8
 #define IMAGEREQUEST_MAX_REDIRECT_RECURSION 16

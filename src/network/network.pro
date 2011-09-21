@@ -20,7 +20,7 @@ include(access/access.pri)
 include(bearer/bearer.pri)
 include(kernel/kernel.pri)
 include(socket/socket.pri)
-include(ssl/ssl.pri)
+#include(ssl/ssl.pri)
 
 QMAKE_LIBS += $$QMAKE_LIBS_NETWORK
 
@@ -29,3 +29,8 @@ symbian {
    TARGET.UID3=0x2001B2DE
    LIBS += -lesock -linsock -lcertstore -lefsrv -lctframework
 }
+
+nacl {
+    LIBS += -lppapi_cpp
+}
+

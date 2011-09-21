@@ -402,6 +402,11 @@
 #define WTF_PLATFORM_NETBSD 1
 #endif
 
+/* OS(NACL) - Google Native Client */
+#if defined(__native_client__)
+#define WTF_OS_NACL 1
+#endif
+
 /* OS(OPENBSD) - OpenBSD */
 #ifdef __OpenBSD__
 #define WTF_OS_OPENBSD 1
@@ -693,7 +698,8 @@
 
 #if !OS(WINDOWS) && !OS(SOLARIS) && !OS(QNX) \
     && !OS(SYMBIAN) && !OS(HAIKU) && !OS(RVCT) \
-    && !OS(ANDROID) && !OS(AIX) && !OS(HPUX)
+    && !OS(ANDROID) && !OS(AIX) && !OS(HPUX) \
+    && !OS(NACL)
 #define HAVE_TM_GMTOFF 1
 #define HAVE_TM_ZONE 1
 #define HAVE_TIMEGM 1
@@ -768,6 +774,9 @@
 #define HAVE_SYS_PARAM_H 1
 #define HAVE_SYS_TIME_H 1
 
+#elif OS(NACL)
+#define HAVE_MMAP 0
+#define USE_SYSTEM_MALLOC 1
 #else
 
 /* FIXME: is this actually used or do other platforms generate their own config.h? */
@@ -1056,5 +1065,11 @@ on MinGW. See https://bugs.webkit.org/show_bug.cgi?id=29268 */
 #define WTF_PLATFORM_CFNETWORK Error USE_macro_should_be_used_with_CFNETWORK
 
 #define ENABLE_JSC_ZOMBIES 0
+
+#if ENABLE(JIT)
+#warning JIT
+#endif
+
+
 
 #endif /* WTF_Platform_h */

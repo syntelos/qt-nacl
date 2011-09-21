@@ -69,6 +69,18 @@ double randomNumber()
 #elif OS(DARWIN)
     uint32_t bits = arc4random();
     return static_cast<double>(bits) / (static_cast<double>(std::numeric_limits<uint32_t>::max()) + 1.0);
+#elif OS(NACL)
+    uint32_t part1 = rand() & (RAND_MAX - 1);
+    uint32_t part2 = rand() & (RAND_MAX - 1);
+    // random only provides 31 bits
+    uint64_t fullRandom = part1;
+    fullRandom <<= 31;
+    fullRandom |= part2;
+
+    // Mask off the low 53bits
+    fullRandom &= (1LL << 53) - 1;
+    return static_cast<double>(fullRandom)/static_cast<double>(1LL << 53);
+
 #elif OS(UNIX)
     uint32_t part1 = random() & (RAND_MAX - 1);
     uint32_t part2 = random() & (RAND_MAX - 1);

@@ -54,6 +54,10 @@
 // We mean it.
 //
 
+#include <qglobal.h>
+
+#ifndef QT_NO_HTTP
+
 #include <QObject>
 #include <QThreadStorage>
 #include <QNetworkProxy>

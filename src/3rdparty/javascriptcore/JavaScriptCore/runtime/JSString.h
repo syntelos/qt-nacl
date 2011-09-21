@@ -530,7 +530,7 @@ namespace JSC {
         if (isString())
             return static_cast<JSString*>(asCell())->value(exec);
         if (isInt32())
-            return exec->globalData().numericStrings.add(asInt32());
+            return exec->globalData().numericStrings.add((int)(asInt32()));
         if (isDouble())
             return exec->globalData().numericStrings.add(asDouble());
         if (isTrue())
@@ -550,7 +550,7 @@ namespace JSC {
         if (isString())
             return static_cast<JSString*>(asCell())->value(exec);
         if (isInt32())
-            return exec->globalData().numericStrings.add(asInt32());
+            return exec->globalData().numericStrings.add((int)(asInt32()));
         if (isDouble())
             return exec->globalData().numericStrings.add(asDouble());
         if (isTrue())

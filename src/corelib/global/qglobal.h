@@ -2453,7 +2453,6 @@ template <typename Wrapper> static inline typename Wrapper::pointer qGetPtrHelpe
 #define QT_TRANSLATE_NOOP3_UTF8(scope, x, comment) {x, comment}
 
 #ifndef QT_NO_TRANSLATION // ### This should enclose the NOOPs above
-
 // Defined in qcoreapplication.cpp
 // The better name qTrId() is reserved for an upcoming function which would
 // return a much more powerful QStringFormatter instead of a QString.
@@ -2763,18 +2762,9 @@ QT_LICENSED_MODULE(DBus)
 #  endif
 #endif
 
-#if !(defined(Q_WS_WIN) && !defined(Q_WS_WINCE)) \
-    && !(defined(Q_WS_MAC) && defined(QT_MAC_USE_COCOA)) \
-    && !(defined(Q_WS_X11) && !defined(QT_NO_FREETYPE)) \
-    && !(defined(Q_WS_QPA))
-#  define QT_NO_RAWFONT
+#ifdef Q_OS_NACL
+    void qtRunOnPepperThread(void (*fn)(void *), void *data);
 #endif
-
-namespace QtPrivate {
-//like std::enable_if
-template <bool B, typename T = void> struct QEnableIf;
-template <typename T> struct QEnableIf<true, T> { typedef T Type; };
-}
 
 QT_END_NAMESPACE
 QT_END_HEADER

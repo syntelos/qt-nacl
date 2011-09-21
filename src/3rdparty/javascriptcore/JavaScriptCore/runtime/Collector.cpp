@@ -87,6 +87,12 @@
 #include <errno.h>
 #endif
 
+#if OS(NACL)
+#include <malloc.h>
+#include <sys/nacl_syscalls.h>
+#define MAP_ANON 0
+#endif
+
 #endif
 
 #define COLLECT_ON_EVERY_ALLOCATION 0
@@ -194,6 +200,8 @@ NEVER_INLINE CollectorBlock* Heap::allocateBlock()
 #if OS(DARWIN)
     vm_address_t address = 0;
     vm_map(current_task(), &address, BLOCK_SIZE, BLOCK_OFFSET_MASK, VM_FLAGS_ANYWHERE | VM_TAG_FOR_COLLECTOR_MEMORY, MEMORY_OBJECT_NULL, 0, FALSE, VM_PROT_DEFAULT, VM_PROT_DEFAULT, VM_INHERIT_DEFAULT);
+#elif OS(NACL)
+    void* address = memalign(BLOCK_SIZE, BLOCK_SIZE);
 #elif OS(SYMBIAN)
     void* address = m_blockallocator.alloc();  
     if (!address)
@@ -211,11 +219,10 @@ NEVER_INLINE CollectorBlock* Heap::allocateBlock()
     void* address;
     posix_memalign(&address, BLOCK_SIZE, BLOCK_SIZE);
 #else
-
 #if ENABLE(JSC_MULTIPLE_THREADS)
 #error Need to initialize pagesize safely.
 #endif
-    static size_t pagesize = getpagesize();
+    static size_t pagesize = BLOCK_SIZE; //getpagesize();
 
     size_t extra = 0;
     if (BLOCK_SIZE > pagesize)
@@ -287,6 +294,8 @@ NEVER_INLINE void Heap::freeBlockPtr(CollectorBlock* block)
 {
 #if OS(DARWIN)    
     vm_deallocate(current_task(), reinterpret_cast<vm_address_t>(block), BLOCK_SIZE);
+#elif OS(NACL)
+    // free?
 #elif OS(SYMBIAN)
     m_blockallocator.free(reinterpret_cast<void*>(block));
 #elif OS(WINCE)
@@ -653,10 +662,10 @@ static inline void* currentThreadStackBase()
         pthread_attr_get_np(thread, &sattr);
 #else
         // FIXME: this function is non-portable; other POSIX systems may have different np alternatives
-        pthread_getattr_np(thread, &sattr);
+        //pthread_getattr_np(thread, &sattr);
 #endif
-        int rc = pthread_attr_getstack(&sattr, &stackBase, &stackSize);
-        (void)rc; // FIXME: Deal with error code somehow? Seems fatal.
+        //int rc = pthread_attr_getstack(&sattr, &stackBase, &stackSize);
+        //(void)rc; // FIXME: Deal with error code somehow? Seems fatal.
         ASSERT(stackBase);
         pthread_attr_destroy(&sattr);
         stackThread = thread;
@@ -1264,7 +1273,7 @@ void Heap::reset()
 {
     JAVASCRIPTCORE_GC_BEGIN();
 
-    markRoots();
+    //markRoots();
 
     JAVASCRIPTCORE_GC_MARKED();
 
@@ -1273,15 +1282,16 @@ void Heap::reset()
     m_heap.nextNumber = 0;
     m_heap.extraCost = 0;
 #if ENABLE(JSC_ZOMBIES)
-    sweep();
+    //sweep();
 #endif
-    resizeBlocks();
+    //resizeBlocks();
 
     JAVASCRIPTCORE_GC_END();
 }
 
 void Heap::collectAllGarbage()
 {
+    return;
     JAVASCRIPTCORE_GC_BEGIN();
 
     // If the last iteration through the heap deallocated blocks, we need

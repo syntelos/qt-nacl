@@ -656,11 +656,11 @@ namespace JSC {
 
     inline JSValue::JSValue(ExecState* exec, long i)
     {
-        if (static_cast<int32_t>(i) != i) {
+        if (static_cast<int>(i) != i) {
             *this = JSValue(exec, static_cast<double>(i));
             return;
         }
-        *this = JSValue(exec, static_cast<int32_t>(i));
+        *this = JSValue(exec, static_cast<int>(i));
     }
 
     inline JSValue::JSValue(ExecState* exec, unsigned long i)
@@ -697,7 +697,7 @@ namespace JSC {
             u.asDouble = d;
             return;
         }
-        *this = JSValue(globalData, static_cast<int32_t>(d));
+        *this = JSValue(globalData, static_cast<unsigned int>(d));
     }
     
     inline JSValue::JSValue(JSGlobalData*, int i)
@@ -712,7 +712,7 @@ namespace JSC {
             *this = JSValue(globalData, static_cast<double>(i));
             return;
         }
-        *this = JSValue(globalData, static_cast<int32_t>(i));
+        *this = JSValue(globalData, static_cast<unsigned int>(i));
     }
 
     inline bool JSValue::isNumber() const

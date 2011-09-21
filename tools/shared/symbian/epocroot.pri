@@ -1,5 +1,5 @@
 # Epocroot resolving is only required for tools, so omit it from all mobile/embedded builds
-!symbian:!wince*:!embedded {
+!symbian:!wince*:!embedded:!qpa {
 HEADERS += \
         $$QT_SOURCE_TREE/tools/shared/symbian/epocroot_p.h \
         $$QT_SOURCE_TREE/tools/shared/windows/registry_p.h

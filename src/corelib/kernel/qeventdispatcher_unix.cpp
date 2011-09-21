@@ -213,7 +213,9 @@ int QEventDispatcherUNIXPrivate::doSelect(QEventLoop::ProcessEventsFlags flags, 
             FD_ZERO(&sn_vec[2].select_fds);
         }
 
+#ifndef Q_OS_NACL
         FD_SET(thread_pipe[0], &sn_vec[0].select_fds);
+#endif
         highest = qMax(highest, thread_pipe[0]);
 
         nsel = q->select(highest + 1,
@@ -888,6 +890,9 @@ int QEventDispatcherUNIX::activateSocketNotifiers()
     return n_act;
 }
 
+#ifdef Q_OS_NACL
+Q_CORE_EXPORT void (*qt_pepper_wait)(int) = 0;
+#endif
 bool QEventDispatcherUNIX::processEvents(QEventLoop::ProcessEventsFlags flags)
 {
     Q_D(QEventDispatcherUNIX);
@@ -923,7 +928,14 @@ bool QEventDispatcherUNIX::processEvents(QEventLoop::ProcessEventsFlags flags)
             tm->tv_usec = 0l;
         }
 
+#ifdef Q_OS_NACL
+        nevents = 0;
+//  ### crashes when QtDeclarative is used.
+//        if (canWait && qt_pepper_wait)
+//            qt_pepper_wait(tm->tv_usec / 1000 + tm->tv_sec * 1000);
+#else
         nevents = d->doSelect(flags, tm);
+#endif
 
         // activate timers
         if (! (flags & QEventLoop::X11ExcludeTimers)) {

@@ -520,11 +520,15 @@ void QDeclarativeComponent::loadUrl(const QUrl &url)
 
     d->clear();
 
+    qDebug() << "load url" << url;
+
     if ((url.isRelative() && !url.isEmpty())
     || url.scheme() == QLatin1String("file")) // Workaround QTBUG-11929
         d->url = d->engine->baseUrl().resolved(url);
     else
         d->url = url;
+
+    qDebug() << "url resolved" <<  url;
 
     if (url.isEmpty()) {
         QDeclarativeError error;
@@ -532,6 +536,8 @@ void QDeclarativeComponent::loadUrl(const QUrl &url)
         d->state.errors << error;
         return;
     }
+
+    qDebug() << "loading url";
 
     QDeclarativeTypeData *data = QDeclarativeEnginePrivate::get(d->engine)->typeLoader.get(d->url);
 

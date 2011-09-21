@@ -487,6 +487,8 @@ Load the provided \a blob from the network or filesystem.
 */
 void QDeclarativeDataLoader::load(QDeclarativeDataBlob *blob)
 {
+    qDebug() << "QDeclarativeDataLoader::load" << blob->url();
+
     Q_ASSERT(blob->status() == QDeclarativeDataBlob::Null);
     Q_ASSERT(blob->m_manager == 0);
 
@@ -522,6 +524,8 @@ void QDeclarativeDataLoader::load(QDeclarativeDataBlob *blob)
         }
 
     } else {
+
+        qDebug() << "networkAccessManager" << blob->url();
 
         blob->m_manager = this;
         QNetworkReply *reply = m_engine->networkAccessManager()->get(QNetworkRequest(blob->m_url));

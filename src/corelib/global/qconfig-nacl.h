@@ -83,17 +83,14 @@
 #ifndef QT_NO_FILESYSTEMMODEL
 #  define QT_NO_FILESYSTEMMODEL
 #endif
+#ifndef QT_NO_FILESYSTEMITERATOR
+#  define QT_NO_FILESYSTEMITERATOR
+#endif
 #ifndef QT_NO_PROCESS
 #  define QT_NO_PROCESS
 #endif
 #ifndef QT_NO_TEMPORARYFILE
 #  define QT_NO_TEMPORARYFILE
-#endif
-#ifndef QT_NO_SETTINGS
-#  define QT_NO_SETTINGS
-#endif
-#ifndef QT_NO_LIBRARY
-#  define QT_NO_LIBRARY
 #endif
 
 /* Fonts */
@@ -131,12 +128,6 @@
 #ifndef QT_NO_TEXTCODECPLUGIN
 #  define QT_NO_TEXTCODECPLUGIN
 #endif
-#ifndef QT_NO_TRANSLATION
-#  define QT_NO_TRANSLATION
-#endif
-#ifndef QT_NO_TRANSLATION_UTF8
-#  define QT_NO_TRANSLATION_UTF8
-#endif
 
 /* ItemViews */
 
@@ -145,9 +136,6 @@
 #endif
 
 /* Kernel */
-#ifndef QT_NO_CLIPBOARD
-#  define QT_NO_CLIPBOARD
-#endif
 #ifndef QT_NO_CSSPARSER
 #  define QT_NO_CSSPARSER
 #endif
@@ -219,6 +207,10 @@
 #ifndef QT_NO_FTP
 #  define QT_NO_FTP
 #endif
+#ifndef QT_NO_NETWORKINTERFACE
+#  define QT_NO_NETWORKINTERFACE
+#endif
+
 
 /* Painting */
 #ifndef QT_NO_COLORNAMES

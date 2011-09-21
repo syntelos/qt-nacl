@@ -95,7 +95,7 @@ bool QFileSystemEngine::isCaseSensitive()
 //static
 QFileSystemEntry QFileSystemEngine::getLinkTarget(const QFileSystemEntry &link, QFileSystemMetaData &data)
 {
-#if defined(__GLIBC__) && !defined(PATH_MAX)
+#if  !defined(PATH_MAX)
 #define PATH_CHUNK_SIZE 256
     char *s = 0;
     int len = -1;
@@ -256,6 +256,10 @@ QFileSystemEntry QFileSystemEngine::absoluteName(const QFileSystemEntry &entry)
 //static
 QString QFileSystemEngine::resolveUserName(uint userId)
 {
+#if defined Q_OS_NACL
+    return QString();
+#else
+
 #if !defined(QT_NO_THREAD) && defined(_POSIX_THREAD_SAFE_FUNCTIONS) && !defined(Q_OS_OPENBSD)
     int size_max = sysconf(_SC_GETPW_R_SIZE_MAX);
     if (size_max == -1)
@@ -275,11 +279,16 @@ QString QFileSystemEngine::resolveUserName(uint userId)
     if (pw)
         return QFile::decodeName(QByteArray(pw->pw_name));
     return QString();
+#endif
 }
 
 //static
 QString QFileSystemEngine::resolveGroupName(uint groupId)
 {
+#if defined (Q_OS_NACL)
+    return QString();
+#else
+
 #if !defined(QT_NO_THREAD) && defined(_POSIX_THREAD_SAFE_FUNCTIONS) && !defined(Q_OS_OPENBSD)
     int size_max = sysconf(_SC_GETPW_R_SIZE_MAX);
     if (size_max == -1)
@@ -312,6 +321,7 @@ QString QFileSystemEngine::resolveGroupName(uint groupId)
     if (gr)
         return QFile::decodeName(QByteArray(gr->gr_name));
     return QString();
+#endif
 }
 
 #if !defined(QWS) && !defined(Q_WS_QPA) && defined(Q_OS_MAC)

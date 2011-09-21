@@ -647,7 +647,6 @@ int QNativeSocketEngine::accept()
 }
 
 #ifndef QT_NO_NETWORKINTERFACE
-
 /*!
     \since 4.8
 */
@@ -691,6 +690,7 @@ bool QNativeSocketEngine::setMulticastInterface(const QNetworkInterface &iface)
     Q_CHECK_TYPE(QNativeSocketEngine::setMulticastInterface(), QAbstractSocket::UdpSocket, false);
     return d->nativeSetMulticastInterface(iface);
 }
+#endif //QT_NO_NETWORKINTERFACE
 
 #endif // QT_NO_NETWORKINTERFACE
 

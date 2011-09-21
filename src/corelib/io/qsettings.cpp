@@ -211,12 +211,16 @@ static bool unixLock(int handle, int lockType)
     if (qIsLikelyToBeNfs(handle))
         return false;
 
+#ifdef Q_OS_NACL
+    return false;
+#else
     struct flock fl;
     fl.l_whence = SEEK_SET;
     fl.l_start = 0;
     fl.l_len = 0;
     fl.l_type = lockType;
     return fcntl(handle, F_SETLKW, &fl) == 0;
+#endif
 }
 #endif
 
@@ -1472,6 +1476,8 @@ void QConfFileSettingsPrivate::syncConfFile(int confFileNo)
             return;
         }
     }
+#elif defined(Q_OS_NACL)
+    // no lock support
 #else
     if (file.isOpen())
         unixLock(file.handle(), readOnly ? F_RDLCK : F_WRLCK);

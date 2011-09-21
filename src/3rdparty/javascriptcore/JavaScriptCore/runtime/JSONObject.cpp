@@ -722,7 +722,7 @@ NEVER_INLINE JSValue Walker::walk(JSValue unfiltered)
             }
             case ArrayEndVisitMember: {
                 JSArray* array = arrayStack.last();
-                JSValue filteredValue = callReviver(array, jsString(m_exec, UString::from(indexStack.last())), outValue);
+                JSValue filteredValue = callReviver(array, jsString(m_exec, UString::from((unsigned int)indexStack.last())), outValue);
                 if (filteredValue.isUndefined())
                     array->deleteProperty(m_exec, indexStack.last());
                 else {

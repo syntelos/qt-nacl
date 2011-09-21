@@ -57,9 +57,6 @@ symbian {
         DEFINES += USE_SCHEMEHANDLER
     }
 
-    contains(CONFIG, is_using_gnupoc) {
-        LIBS += -ldirectorylocalizer
-    } else {
-        LIBS += -lDirectoryLocalizer
-    }
+macx:!qpa {
+    OBJECTIVE_SOURCES += util/qscroller_mac.mm
 }

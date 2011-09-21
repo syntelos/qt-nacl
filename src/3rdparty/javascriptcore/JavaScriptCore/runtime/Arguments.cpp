@@ -71,7 +71,7 @@ void Arguments::copyToRegisters(ExecState* exec, Register* buffer, uint32_t maxS
     }
 
     if (LIKELY(!d->deletedArguments)) {
-        unsigned parametersLength = min(min(d->numParameters, d->numArguments), maxSize);
+        unsigned parametersLength = min(min(d->numParameters, d->numArguments), (unsigned int)maxSize);
         unsigned i = 0;
         for (; i < parametersLength; ++i)
             buffer[i] = d->registers[d->firstParameterIndex + i].jsValue();
@@ -80,7 +80,7 @@ void Arguments::copyToRegisters(ExecState* exec, Register* buffer, uint32_t maxS
         return;
     }
     
-    unsigned parametersLength = min(min(d->numParameters, d->numArguments), maxSize);
+    unsigned parametersLength = min(min(d->numParameters, d->numArguments), (unsigned int)maxSize);
     unsigned i = 0;
     for (; i < parametersLength; ++i) {
         if (!d->deletedArguments[i])

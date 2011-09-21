@@ -42,6 +42,8 @@
 #ifndef QPLATFORMDEFS_H
 #define QPLATFORMDEFS_H
 
+#include "../../common/pepper/qplatformdefs.h"
+
 // Get Qt defines/settings
 
 #define _POSIX_TIMERS

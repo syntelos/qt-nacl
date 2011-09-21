@@ -60,11 +60,14 @@
 #include "QtCore/qstack.h"
 #include "QtCore/qwaitcondition.h"
 #include "QtCore/qmap.h"
+
 #include "private/qobject_p.h"
 
 #ifdef Q_OS_SYMBIAN
 #include <e32base.h>
 #endif
+
+
 
 QT_BEGIN_NAMESPACE
 
