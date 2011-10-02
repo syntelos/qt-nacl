@@ -31,8 +31,6 @@ HEADERS += $$PWD/peppereventtranslator.h \
 
 RESOURCES += fonts.qrc
 
-message(hepp)
-
 CONFIG += static
 LIBS += -lppapi -lppapi_cpp -lppapi_gles2 -lsrpc -limc_syscalls -lplatform -lgio
 OBJECTS_DIR = .obj/debug-static
