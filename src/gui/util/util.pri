@@ -56,6 +56,7 @@ symbian {
     } else {
         DEFINES += USE_SCHEMEHANDLER
     }
+}
 
 macx:!qpa {
     OBJECTIVE_SOURCES += util/qscroller_mac.mm

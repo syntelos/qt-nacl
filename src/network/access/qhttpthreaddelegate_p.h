@@ -72,8 +72,6 @@
 #include "private/qnoncontiguousbytedevice_p.h"
 #include "qnetworkaccessauthenticationmanager_p.h"
 
-#ifndef QT_NO_HTTP
-
 QT_BEGIN_NAMESPACE
 
 class QAuthenticator;
