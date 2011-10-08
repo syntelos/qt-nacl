@@ -72,10 +72,10 @@ void QPepperGLContext::flushCallback()
 void* QPepperGLContext::getProcAddress(const QString& procName)
 {
     qDebug() << "QPepperGLContext::getProcAddress" << procName;
-    const PPB_OpenGLES2_Dev* functionPointers = glGetInterfacePPAPI();
+   // const PPB_OpenGLES2_Dev* functionPointers = glGetInterfacePPAPI();
 
     if (procName == QLatin1String("glIsRenderbufferEXT")) {
-        return reinterpret_cast<void *>(functionPointers->IsRenderbuffer);
+     //   return reinterpret_cast<void *>(functionPointers->IsRenderbuffer);
     }
     // ### ... and so on for all functions.
 
