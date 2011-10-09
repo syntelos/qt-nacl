@@ -65,6 +65,20 @@ QT_BEGIN_HEADER
 class CApaApplication;
 #endif
 
+#if defined (Q_OS_NACL)
+// Native client "main" define hack:
+#define main qt_pepper_main
+//
+// Qt apps expects the main entry point to be
+// "main", but that function name is not available
+// to native client applications. There are two
+// possible solutions:
+// 1) Change the app source to use qt_pepper_main on NaCl
+// 2) #define main qt_pepper_main
+//
+#endif
+
+
 QT_BEGIN_NAMESPACE
 
 QT_MODULE(Gui)
