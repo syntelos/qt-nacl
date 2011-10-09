@@ -3,6 +3,8 @@
 #include "qpepperscreen.h"
 #include "qpepperplatformwindow.h"
 #include "qpeppermain.h"
+#include "qpepperfontdatabase.h"
+
 
 #include <QtGui/private/qpixmap_raster_p.h>
 #include <QtGui/QPlatformWindow>

@@ -7,10 +7,12 @@
 #include <QtGui/QPlatformIntegration>
 #include <QtGui/QPlatformScreen>
 #include "qpepperscreen.h"
-#include "qpepperfontdatabase.h"
+
 
 QT_BEGIN_NAMESPACE
 
+class QPlatformFontDatabase; 
+class QPepperFontDatabase;
 class QPepperIntegration : public QPlatformIntegration
 {
 public:
