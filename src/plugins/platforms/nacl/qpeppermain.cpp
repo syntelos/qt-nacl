@@ -12,6 +12,8 @@ int qt_pepper_main(int argc, char**argv);
 void *qt_pepper_main_thread_function(void *);
 void qt_pepper_wait_handler(int msec);
 
+Q_IMPORT_PLUGIN(pepper);
+
 void qtRunOnPepperThreadCallback(void* user_data, int32_t result);
 struct RunOnPepperThreadCall
 {

@@ -3,9 +3,7 @@
 
 #include "declarativeviewer.h"
 
-Q_IMPORT_PLUGIN(pepper)
-
-int qt_pepper_main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     // # disable timed waiting (crashes). This will cause
     // Qt to busy wait for events/timers at 100% CPU usage.

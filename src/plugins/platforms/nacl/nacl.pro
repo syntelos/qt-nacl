@@ -1,7 +1,7 @@
 TARGET     = QtNacl
 
-#include($$PWD/../../qpluginbase.pri)
 include($$PWD/../../../qbase.pri)
+include($$PWD/../../qpluginbase.pri)
 
 include($$PWD/../fontdatabases/genericunix/genericunix.pri)
 
@@ -35,8 +35,8 @@ RESOURCES += fonts.qrc
 
 CONFIG += static
 LIBS += -lppapi -lppapi_cpp -lppapi_gles2 -lsrpc -limc_syscalls -lplatform -lgio
-OBJECTS_DIR = .obj/debug-static
-MOC_DIR = .moc/debug-static
+OBJECTS_DIR = .obj
+MOC_DIR = .moc
 TEMPLATE = lib
 
 target.path += $$[QT_INSTALL_LIBS]
