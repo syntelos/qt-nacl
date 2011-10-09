@@ -1,0 +1,52 @@
+<script>
+
+var plugin;
+var startupTimeout;
+var statusField;
+
+function updateStatusField(message)
+{
+    statusField.innerHTML =  message;
+}
+
+function clearStatusField()
+{
+    statusField.innerHTML = "";
+}
+
+var addConsoleLine = function(line) {
+    console.log(line);
+}
+
+var waitForNaClModuleReady = function() {
+  if (1 == plugin.__moduleReady) {
+    clearTimeout(startupTimeout);
+    clearStatusField()
+    plugin.setTextBox(addConsoleLine);
+    // Set up the display size
+  } else {
+    if (plugin.__moduleReady == undefined) {
+      plugin.setTextBox(addConsoleLine);
+      clearStatusField();
+      return;
+    }
+    startupTimeout = setTimeout(waitForNaClModuleReady, 100);
+  }
+}
+
+// The page begins by loading the NativeClient module
+function Init() {
+    plugin = document.getElementById('NEXE');
+    statusField = document.getElementById("statusField");
+    // Wait for the module to finish initializing before scripting.
+    waitForNaClModuleReady();
+}
+
+window.onload = Init;
+
+</script>
+
+<div id="statusField"> <center> <br><br><br> <img src=":qt.png"></img> <br><br><br> <img src=":loader.gif"> </center></img> </div>
+<embed type="application/x-nacl-srpc" id="NEXE" src="NEXE"
+             class="QtNaClApplication" width="600" height="400" onclick="" />
+
