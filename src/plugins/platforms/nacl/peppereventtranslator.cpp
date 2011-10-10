@@ -49,7 +49,7 @@ bool PepperEventTranslator::processEvent(const pp::InputEvent& event)
 
 bool PepperEventTranslator::processMouseEvent(const pp::MouseInputEvent &event, PP_InputEvent_Type eventType)
 {
-    //qDebug() << "processMouseEvent" << event.button << event.modifier;
+    //qDebug() << "processMouseEvent" << event.GetPosition().x() << event.GetPosition().y();
     QPoint point(event.GetPosition().x(), event.GetPosition().y());
     //Qt::MouseButton button = translatePepperMouseButton(event.button);
     Qt::MouseButtons modifiers = translatePepperMouseModifiers(event.GetModifiers());
@@ -58,10 +58,11 @@ bool PepperEventTranslator::processMouseEvent(const pp::MouseInputEvent &event, 
     // on mouse up.
     // ### strictly not correct, only the state for the released button should
     // be cleared.
-    if (eventType == PP_INPUTEVENT_TYPE_MOUSEUP)
-        QWindowSystemInterface::handleMouseEvent(0, point, point, Qt::MouseButtons(Qt::NoButton));
-    else
-        QWindowSystemInterface::handleMouseEvent(0, point, point, modifiers);
+    if (eventType == PP_INPUTEVENT_TYPE_MOUSEUP) {
+        QWindowSystemInterface::handleMouseEvent(widget, point, point, Qt::MouseButtons(Qt::NoButton));
+    } else {
+        QWindowSystemInterface::handleMouseEvent(widget, point, point, modifiers);
+    }
 
     return true;
 }
@@ -100,7 +101,7 @@ bool PepperEventTranslator::processKeyEvent(const pp::KeyboardInputEvent &event,
         currentPepperKey = event.GetKeyCode();
         if (!alphanumretic) {
             QWindowSystemInterface::handleKeyEvent(0, QEvent::KeyPress, key, modifiers);
-           // qDebug() << "send Key Down" << event.key_code << hex << modifiers;
+           // qDebug() << "send Key Down" << event.GetKeyCode() << hex << modifiers;
         }
     }
 

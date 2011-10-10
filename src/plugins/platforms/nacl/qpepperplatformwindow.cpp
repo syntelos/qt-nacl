@@ -15,7 +15,9 @@ QPepperPlatformWindow::QPepperPlatformWindow(QWidget *windowWidget)
 ,m_isVisible(false)
 ,m_pepperGlContext(0)
 {
-
+    QtPepperMain *pepperMain = QtPepperMain::globalInstance();
+    if (pepperMain && pepperMain->instance() && pepperMain->instance()->eventTranslator.widget == 0)
+        pepperMain->instance()->eventTranslator.widget = windowWidget;
 }
 
 QPlatformGLContext *QPepperPlatformWindow::glContext() const
