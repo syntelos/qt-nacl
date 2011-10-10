@@ -8,6 +8,7 @@
 
 #include <ppapi/cpp/instance.h>
 #include "ppapi/cpp/var.h"
+#include "ppapi/cpp/rect.h"
 #include "ppapi/cpp/size.h"
 #include "ppapi/cpp/graphics_2d.h"
 #include "ppapi/cpp/image_data.h"
@@ -33,6 +34,7 @@ public:
     PepperEventTranslator eventTranslator;
 #endif
     pp::Var m_console;
+    pp::Rect currentGeometry;
 };
 
 #endif

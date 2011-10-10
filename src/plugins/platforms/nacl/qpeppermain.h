@@ -38,7 +38,9 @@ public:
     void log(const QString &message);
 #ifndef QT_NO_PEPPER_INTEGRATION
     QtInstance *instance();
+#ifndef QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION
     pp::ImageData imageData();
+#endif
 #endif
 public Q_SLOTS:
     void qtShutDown();
@@ -51,10 +53,10 @@ public:
     bool m_exitNow;
 
     QSize m_screenSize;
-
+#ifndef QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION
     pp::Graphics2D m_graphicsContext;
     pp::ImageData m_imageData;
-
+#endif
     bool m_screenResized;
 
     QMutex m_mutex;

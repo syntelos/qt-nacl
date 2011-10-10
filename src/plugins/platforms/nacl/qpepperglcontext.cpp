@@ -25,6 +25,8 @@ QPepperGLContext::~QPepperGLContext()
 void QPepperGLContext::makeCurrent()
 {
     qDebug() << "QPepperGLContext::makeCurrent";
+    return;
+
     if (!m_context || m_context->is_null()) {
         m_context = new pp::Context3D_Dev(*m_instance, 0, pp::Context3D_Dev(), NULL);
         if (m_context->is_null()) {
@@ -42,6 +44,7 @@ void QPepperGLContext::makeCurrent()
 void QPepperGLContext::doneCurrent()
 {
     qDebug() << "QPepperGLContext::doneCurrent";
+    return;
     m_instance->BindGraphics(pp::Surface3D_Dev());
     m_context->BindSurfaces(pp::Surface3D_Dev(), pp::Surface3D_Dev());
     glSetCurrentContextPPAPI(0);
@@ -57,11 +60,12 @@ namespace {
 void QPepperGLContext::swapBuffers()
 {
     qDebug() << "QPepperGLContext::swapBuffers";
+    return;
     if (m_pendingFlush)
         return;
 
     m_pendingFlush = true;
-    m_surface->SwapBuffers(pp::CompletionCallback(&FlushCallback, this));
+   // m_surface->SwapBuffers(pp::CompletionCallback(&FlushCallback, this));
 }
 
 void QPepperGLContext::flushCallback()

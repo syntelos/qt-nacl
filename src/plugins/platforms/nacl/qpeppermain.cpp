@@ -29,6 +29,8 @@ void qtRunOnPepperThreadImplementation(void (*fn)(void *), void *data)
     call->fn = fn;
     call->data = data;
     call->wakeQtThread = false;
+ //   qDebug() << "qtRunOnPepperThreadImplementation" << fn << QtModule::getCore()->IsMainThread();
+
     QtModule::getCore()->CallOnMainThread(0, pp::CompletionCallback(&qtRunOnPepperThreadCallback, call), 0);
 }
 
@@ -134,10 +136,12 @@ QtInstance *QtPepperMain::instance()
     return m_mainInstance;
 }
 
+#ifndef QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION
 pp::ImageData QtPepperMain::imageData()
 {
     return m_imageData;
 }
+#endif
 #endif
 
 void QtPepperMain::qtShutDown()
@@ -165,7 +169,7 @@ void *qt_pepper_main_thread_function(void *data)
     // qDebug() << "QtPepperMainThread::run entered" <<QString::number((quintptr) QThread::currentThread(), 16);
     QtPepperMain *qtPepperMain = QtPepperMain::globalInstance();
 
-    qInstallMsgHandler(qtPepperMessageHandler);
+   // qInstallMsgHandler(qtPepperMessageHandler);
 
     int argc = 3;
     const char * argv[] = { "", "-platform", "pepper" };
@@ -195,7 +199,7 @@ void qt_pepper_wait_handler(int msec)
     QtModule::getCore()->CallOnMainThread(msec, pp::CompletionCallback(&qt_pepper_wakeup, 0), 0);
     qtPepperMain->m_qtWaiting = true;
 
-    // If there is a pendig resize the pepper thread might be waiting
+    // If there is a pending resize the pepper thread might be waiting
     // for the Qt thread to sleep. Wake it.
     if (qtPepperMain->m_screenResized) {
         qtPepperMain->m_pepperWait.wakeOne();

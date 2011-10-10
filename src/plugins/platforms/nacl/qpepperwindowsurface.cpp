@@ -47,21 +47,25 @@ void qPepperWindowSurfaceCreatePepperGraphicsContext(void *context)
 
 void QPepperWindowSurface::createPepperGraphicsContext()
 {
-    qDebug() << "createPepperGraphicsContext_callback" << QThread::currentThreadId();
+    qDebug() << "createPepperGraphicsContext_callback" << QThread::currentThreadId() << QtModule::getCore()->IsMainThread();
 
     QtPepperMain *pepperMain = QtPepperMain::globalInstance();
+    qDebug() << "createPepperGraphicsContext_callback  2" << QtModule::getCore()->IsMainThread();
 
     m_graphicsContext = Graphics2D(pepperMain->instance(), toPPSize(this->size()), false);
+    qDebug() << "createPepperGraphicsContext_callback  3" << QtModule::getCore()->IsMainThread();
 
     if (!pepperMain->instance()->BindGraphics(m_graphicsContext)) {
         qDebug() << "Couldn't bind the device context";
     }
+    qDebug() << "createPepperGraphicsContext_callback  4";
 
     m_imageData = ImageData(pepperMain->instance(),
                            PP_IMAGEDATAFORMAT_BGRA_PREMUL,
                            toPPSize(this->size()), true);
 
     m_graphicsContextCreated = true;
+    qDebug() << "createPepperGraphicsContext_callback done";
 }
 #endif
 
@@ -81,18 +85,23 @@ void QPepperWindowSurface::createQImagePaintDevice(QSize size)
 
     } else {
 #ifdef QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION
+        qDebug() << "QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION 1" << QThread::currentThreadId() << QtModule::getCore()->IsMainThread();;
         m_graphicsContextCreated = false;
         pepperMain->runOnPepperThread(qPepperWindowSurfaceCreatePepperGraphicsContext, this);
         // Busy-wait until the contexts has been created on the pepper thread.
         // ### Replace with runOnPepperThreadSynchronous call when that is stable.
+
+        qDebug() << "QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION 1 delay";
         while (!m_graphicsContextCreated)
             ;
 
+        qDebug() << "QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION 1 delay done";
         // Use the pepper ImageData as the backing buffer.
         m_qtImage = QImage(reinterpret_cast<uchar *>(m_imageData.data()),
                        size.width(), size.height(),
                        m_imageData.stride(),
                        QImage::Format_ARGB32_Premultiplied);
+        qDebug() << "QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION done 12";
 
 #else
         // Use the pepper ImageData as the backing buffer.
@@ -127,7 +136,7 @@ void QPepperWindowSurface::beginPaint(const QRegion &region)
         if (pepperMain->m_inFlush) {
             pepperMain->m_qtWaiting = true;
 
-            // If there is a pendig resize the pepper thread might be waiting
+            // If there is a pending resize the pepper thread might be waiting
             // for the Qt thread to sleep. Wake it.
             if (pepperMain->m_screenResized) {
                 pepperMain->m_pepperWait.wakeOne();
@@ -178,6 +187,7 @@ void flushFunction(void* context)
 {
     QtPepperMain *pepperMain = QtPepperMain::globalInstance();
 #ifdef QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION
+    qDebug() << "QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION 13";
     QPepperWindowSurface *windowSurface = reinterpret_cast<QPepperWindowSurface *>(context);
     if (windowSurface->m_graphicsContext.is_null()) {
         pepperMain->m_inFlush = false;
@@ -188,6 +198,7 @@ void flushFunction(void* context)
                                                  pp::Rect(0, 0, windowSurface->m_graphicsContext.size().width(),
                                                                 windowSurface->m_graphicsContext.size().height()));
     windowSurface->m_graphicsContext.Flush(CompletionCallback(&flushCallback, 0));
+    qDebug() << "QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION 14";
 #else
     if (pepperMain->m_graphicsContext.is_null()) {
         pepperMain->m_inFlush = false;
@@ -209,6 +220,8 @@ void QPepperWindowSurface::flush(QWidget *widget, const QRegion &region, const Q
     Q_UNUSED(region);
     Q_UNUSED(offset);
 
+    qDebug() << "QPepperWindowSurface::flush" << QtModule::getCore()->IsMainThread();
+
     // composit child window surfaces onto this surface.
     foreach (QPepperWindowSurface *childWindowSurface, m_childWindowSurfaces) {
         QPainter p(&m_qtImage);
@@ -224,8 +237,10 @@ void QPepperWindowSurface::flush(QWidget *widget, const QRegion &region, const Q
     }
 
 #ifdef QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION
+    qDebug() << "QPepperWindowSurface::flush ##";
     if (m_graphicsContext.is_null())
         return;
+    qDebug("QPepperWindowSurface::done ###");
 #else
     if (QtPepperMain::globalInstance()->m_graphicsContext.is_null())
         return;
@@ -240,6 +255,7 @@ void QPepperWindowSurface::flush(QWidget *widget, const QRegion &region, const Q
 
 void QPepperWindowSurface::resize(const QSize &size)
 {
+    qDebug() << "QPepperWindowSurface::resize";
     QWindowSurface::resize(size);
     createQImagePaintDevice(size);
 }

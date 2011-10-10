@@ -10,7 +10,6 @@
 #endif
 
 #include "ppapi/cpp/var.h"
-#include "ppapi/cpp/rect.h"
 #include "ppapi/cpp/graphics_2d.h"
 #include "ppapi/cpp/instance.h"
 #include "ppapi/cpp/image_data.h"
@@ -21,7 +20,7 @@ using namespace pp;
 QtInstance::QtInstance(PP_Instance instance)
 : pp::Instance(instance)
 {
-
+    currentGeometry = Rect();
 }
 
 QtInstance::~QtInstance()
@@ -50,7 +49,7 @@ void QtInstance::DidChangeView(const Rect& geometry, const Rect& clip)
 #ifndef QT_PEPPER_STANDALONE_MODE
     QtPepperMain *pepperMain = QtPepperMain::globalInstance();
 
-    if (geometry.size() == pepperMain->m_graphicsContext.size())
+    if (geometry.size() == currentGeometry.size())
         return;
 
    // This is the entry point where we start the Qt plugin.
@@ -164,6 +163,7 @@ void QtInstance::HandleMessage(const Var& var_message)
 void QtInstance::setupGraphics(pp::Size newSize)
 {
 #ifndef QT_PEPPER_STANDALONE_MODE
+#ifndef QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION
     QtPepperMain *pepperMain = QtPepperMain::globalInstance();
     pepperMain->m_graphicsContext = Graphics2D(this, newSize, false);
     if (!BindGraphics(pepperMain->m_graphicsContext)) {
@@ -174,6 +174,7 @@ void QtInstance::setupGraphics(pp::Size newSize)
                            PP_IMAGEDATAFORMAT_BGRA_PREMUL,
                            newSize, true);
     pepperMain->m_screenSize = toQSize(newSize);
+#endif
 #endif
 }
 
