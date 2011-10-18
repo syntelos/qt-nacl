@@ -215,7 +215,7 @@ void Server::serveResponseFromPath(HttpResponse *response, QString path)
 //    qDebug() << "";
 //    qDebug() << "htmlForPath" << path;
     QByteArray html;
-    html += "<H2>Qt for Google Native Client Demo Browser </H2>";
+    html += "<H2>Qt for Google Native Client</H2>";
     // special case for /: serve the root paths
     if (path == "/") {
         foreach (const QString &rootPath, rootPaths) {
@@ -227,17 +227,36 @@ void Server::serveResponseFromPath(HttpResponse *response, QString path)
         response->setBody(html);
     }
 
-    // special case (image resources)
+    // Serve resources. (Paths that starts with ':').
     int resourceIndex = path.indexOf(':');
     if (resourceIndex != -1) {
         QString fileName = path.mid(resourceIndex);
         QFile file(fileName);
-	//qDebug() << "resource file" << 	fileName;
+        if (!file.exists())
+            qDebug() << "Resource file not found:" << fileName;
+
         file.open(QIODevice::ReadOnly);
         response->setContentType("image");
         response->seteTag("1");
-        response->setBody(file.readAll());
-        return; 
+
+        QByteArray fileContents = file.readAll();
+        if (fileContents.size() == 0)
+            qDebug() << "Resource file has no contents" << fileName;
+        response->setBody(fileContents);
+        return;
+    }
+
+    // serve .nmf files generated from the template
+    if (path.endsWith("nmf")) {
+        QFile nmfFile("naclnmftemplate.nmf");
+        nmfFile.open(QIODevice::ReadOnly);
+        QByteArray fileContents = nmfFile.readAll();
+        if (fileContents.size() == 0)
+            qDebug() << "Resource file has no contents" << nmfFile.fileName();
+        QString appName = QFileInfo(path).fileName();
+        appName.chop(4);
+        fileContents.replace("APPNAME", appName.toAscii());
+        response->setBody(fileContents);
     }
     
     if (path.startsWith("/"))
@@ -252,14 +271,14 @@ void Server::serveResponseFromPath(HttpResponse *response, QString path)
     // is the path pointing directly to a nacl file?
     bool isNaClFile = (QFile::exists(canonicalPath) && QFileInfo(canonicalPath).isDir() == false);
 
-    // does the the path a leaf directroy containing a nacl executable?
+    // does the the path have a leaf directory containing an NaCl executable?
     bool isdir = QFileInfo(canonicalPath).isDir();
     QString leafName = QDir(canonicalPath).dirName();
-    bool hasNaclFile = QFile::exists(canonicalPath + "/" + leafName);
+    bool hasNaclFile = QFile::exists(canonicalPath + "/" + leafName + ".nexe");
     bool isNaClDir = isdir && hasNaclFile;
 
-//    qDebug() << "canonical path" << canonicalPath;
-//    qDebug() << "isNaClFile" << isNaClFile << "isNaClDir" << isNaClDir;
+    //qDebug() << "canonical path" << canonicalPath;
+    //qDebug() << "isNaClFile" << isNaClFile << "isNaClDir" << isNaClDir;
 
     // serve the file, a combined tree/nacl area view or a dir tree view.
     if (isNaClFile) {
@@ -280,7 +299,7 @@ void Server::serveResponseFromPath(HttpResponse *response, QString path)
         html += htmlLinksForPath(findCanonicalPath(newPath), newPath, QLatin1String("../"));
         html += "</div>";
 
-        html += "<div style=\"float: right\">";
+        html += "<div style=\"float: left\">";
         html += instantiateNaclHtmlContent(last);
         html += "</div>";
     } else {
@@ -354,7 +373,7 @@ QByteArray Server::htmlLinksForPath(QString canonicalPath, QString path, QString
     if (path.endsWith('/') == false)
         path.append("/");
 
-//    qDebug() << "link path is" << path;
+    // qDebug() << "link path is" << path;
     html.append("<a href=" + linkPrefix + "../>..</a><br>");
 
     QDirIterator it(canonicalPath);
@@ -383,7 +402,7 @@ QByteArray Server::instantiateNaclHtmlContent(QString appName)
 {
 //    qDebug() << "instantiateNaclHtmlContent" << appName;
     QByteArray html = naclHtmlContent;
-    html.replace("NEXE", appName.toUtf8());
+    html.replace("APPNAME", appName.toUtf8());
     return html;
 }
 
@@ -430,6 +449,9 @@ void Server::saveDemoFiles()
     }
 }
 
+// Search for NaCl examples in path. Recurses into subdirectories.
+// For a given path examples/widgets/wiggly, returns true if
+// examples/widgets/wiggly/wigly.nexe exists.
 bool Server::hasDemoFileRecursive(QString path)
 {
     QString canonicalPath = QDir(path).canonicalPath();
@@ -437,8 +459,8 @@ bool Server::hasDemoFileRecursive(QString path)
         return hasDemoFilesCache.value(canonicalPath);
 
     QDir dir(path);
-   // qDebug() << "check" << path + "/" + dir.dirName() << QFile::exists(path + "/" + dir.dirName());
-    if (QFile::exists(path + "/" + dir.dirName())) {
+    // qDebug() << "check" << path + "/" + dir.dirName() << QFile::exists(path + "/" + dir.dirName());
+    if (QFile::exists(path + "/" + dir.dirName() + ".nexe")) {
         hasDemoFilesCache.insert(path, true);
         return true;
     }

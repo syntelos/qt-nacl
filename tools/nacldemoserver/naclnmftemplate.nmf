@@ -1,0 +1,5 @@
+{
+  "program": {
+    "x86-32": {"url": "APPNAME.nexe"}
+  }
+}

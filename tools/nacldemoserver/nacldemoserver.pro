@@ -11,3 +11,9 @@ HEADERS += serverwidget.h \
     httpserver.h
 FORMS += serverwidget.ui
 RESOURCES += nacldemoserver.qrc
+OTHER_FILES = \
+    naclhtmltemplate.html \
+    naclnmftemplate.nmf \
+    check_browser.js \
+    qtnaclloader.js \
+
