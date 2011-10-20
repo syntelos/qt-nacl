@@ -127,9 +127,6 @@
 #endif
 
 /* Kernel */
-#ifndef QT_NO_CURSOR
-#  define QT_NO_CURSOR
-#endif
 #ifndef QT_NO_DRAGANDDROP
 #  define QT_NO_DRAGANDDROP
 #endif
@@ -253,9 +250,6 @@
 #endif
 #ifndef QT_NO_SXE
 #  define QT_NO_SXE
-#endif
-#ifndef QT_NO_QWS_PROPERTIES
-#  define QT_NO_QWS_PROPERTIES
 #endif
 #ifndef QT_NO_QWS_PROXYSCREEN
 #  define QT_NO_QWS_PROXYSCREEN

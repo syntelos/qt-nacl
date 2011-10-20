@@ -263,3 +263,8 @@ src/xml/lib/
 *.dep
 *.map
 work
+
+# Native Client
+*.nexe
+
+

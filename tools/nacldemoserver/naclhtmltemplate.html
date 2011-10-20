@@ -1,52 +1,31 @@
-<script>
+<script type="text/javascript" src=":check_browser.js"></script>
+<script type="text/javascript" src=":qtnaclloader.js"></script>
 
-var plugin;
-var startupTimeout;
-var statusField;
+<script type="text/javascript">
 
-function updateStatusField(message)
+var qtNaClContainer;
+var qtNaClLoader
+
+function Init()
 {
-    statusField.innerHTML =  message;
+    console.log("init");
+    qtNaClContainer = document.getElementById("qtNaClContainer");
+    qtNaClLoader = new QtNaClLoader(qtNaClContainer);
+    setSizeFromWindow();
+    qtNaClLoader.loadNexe("APPNAME"); //APPNAME is replaced with the
+                                      //real name by the demo server
 }
 
-function clearStatusField()
+function setSizeFromWindow()
 {
-    statusField.innerHTML = "";
-}
-
-var addConsoleLine = function(line) {
-    console.log(line);
-}
-
-var waitForNaClModuleReady = function() {
-  if (1 == plugin.__moduleReady) {
-    clearTimeout(startupTimeout);
-    clearStatusField()
-    plugin.setTextBox(addConsoleLine);
-    // Set up the display size
-  } else {
-    if (plugin.__moduleReady == undefined) {
-      plugin.setTextBox(addConsoleLine);
-      clearStatusField();
-      return;
-    }
-    startupTimeout = setTimeout(waitForNaClModuleReady, 100);
-  }
-}
-
-// The page begins by loading the NativeClient module
-function Init() {
-    plugin = document.getElementById('NEXE');
-    statusField = document.getElementById("statusField");
-    // Wait for the module to finish initializing before scripting.
-    waitForNaClModuleReady();
+    qtNaClLoader.setSize(window.innerWidth * 0.65, window.innerHeight - 75)
 }
 
 window.onload = Init;
+window.onresize = setSizeFromWindow
+
 
 </script>
 
-<div id="statusField"> <center> <br><br><br> <img src=":qt.png"></img> <br><br><br> <img src=":loader.gif"> </center></img> </div>
-<embed type="application/x-nacl-srpc" id="NEXE" src="NEXE"
-             class="QtNaClApplication" width="600" height="400" onclick="" />
+<div id="qtNaClContainer">  </div>
 
