@@ -25,7 +25,7 @@ public:
     Qt::MouseButtons translatePepperMouseModifiers(uint32_t modifier);
     Qt::Key translatePepperKey(uint32_t pepperKey, bool *outAlphanumretic);
     Qt::KeyboardModifiers translatePepperKeyModifiers(uint32_t modifier);
-    QWidget *widget;
+    QWidget *m_window;
 private:
     uint32_t currentPepperKey;
 };

@@ -4,6 +4,7 @@
 #ifndef QWINDOWSURFACE_MINIMAL_H
 #define QWINDOWSURFACE_MINIMAL_H
 
+#include <qobject.h>
 #include <QtGui/private/qwindowsurface_p.h>
 #include <QtGui/QPlatformWindow>
 
@@ -14,20 +15,22 @@
 #endif
 
 #include "qpepperscreen.h"
+#include "qpepperplatformwindow.h"
+#include "pepperinstance.h"
 
 QT_BEGIN_NAMESPACE
 
 class QPepperPlatformWindow;
-class QPepperWindowSurface : public QWindowSurface
+class QPepperWindowSurface : public QObject, public QWindowSurface
 {
+Q_OBJECT
 public:
-    QPepperWindowSurface(QWidget *window, QPepperWindowSurface *parentWindow = 0);
+    QPepperWindowSurface(QWidget *window);
     ~QPepperWindowSurface();
 
-#ifdef QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION
-    void createPepperGraphicsContext();
-#endif
-    void createQImagePaintDevice(QSize size);
+    void createFrameBuffer(QSize size);
+    void setPepperInstance(QPepperInstance *instance);
+    void setFrameBuffer(QImage *frameBuffer);
 
     // virtuals
     QPaintDevice *paintDevice();
@@ -37,23 +40,19 @@ public:
     void flush(QWidget *widget, const QRegion &region, const QPoint &offset);
     void resize(const QSize &size);
 
+    bool m_isInPaint;
+
 protected:
     pp::Rect pepperRect(const QRect rect);
 private:
-    QImage m_qtImage;
-    volatile bool m_graphicsContextCreated;
-#ifdef QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION
-    pp::Graphics2D m_graphicsContext;
-    pp::ImageData m_imageData;
-#endif
-
-    QPoint m_childWindowPos;
-    QPepperWindowSurface *m_parentWindowSurface;
-    QList<QPepperWindowSurface *>m_childWindowSurfaces;
     QPepperPlatformWindow *m_platformWindow;
+    QPepperInstance *m_pepperInstance;
 
-    friend void createPepperGraphicsContext_callback(void *context);
-    friend void flushFunction(void* context);
+    QImage *m_frameBuffer;
+    bool m_ownsFrameBuffer;
+
+//    friend void createPepperGraphicsContext_callback(void *context);
+//    friend void flushFunction(void* context);
 };
 
 QT_END_NAMESPACE

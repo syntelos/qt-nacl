@@ -2,7 +2,7 @@
 #define QPLATFORMGLCONTEXT_PEPPER_H
 
 #include <QPlatformGLContext>
-class QtInstance;
+class QPepperInstance;
 
 namespace pp {
     class Context3D_Dev;
@@ -12,7 +12,7 @@ namespace pp {
 class QPepperGLContext : public QPlatformGLContext
 {
 public:
-    explicit QPepperGLContext(QtInstance *instance);
+    explicit QPepperGLContext(QPepperInstance *instance);
     virtual ~QPepperGLContext();
 
     virtual void makeCurrent();
@@ -23,7 +23,7 @@ public:
 
     virtual QPlatformWindowFormat platformWindowFormat() const;
 private:
-    QtInstance *m_instance;
+    QPepperInstance *m_instance;
     pp::Context3D_Dev *m_context;
     pp::Surface3D_Dev *m_surface;
     bool m_pendingFlush;

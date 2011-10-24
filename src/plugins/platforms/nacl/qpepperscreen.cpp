@@ -7,7 +7,7 @@
 QT_BEGIN_NAMESPACE
 
 /*
-    A pepper screen corresponds to an nacl <embed> tag.
+    A pepper screen corresponds to the browser viewport.
 */
 
 QPepperScreen::QPepperScreen()
@@ -17,7 +17,8 @@ QPepperScreen::QPepperScreen()
 
 QRect QPepperScreen::geometry() const
 {
-    return QRect(QPoint(0, 0), QtPepperMain::globalInstance()->m_screenSize);
+    // ### get viewport size
+    return QRect(QPoint(0, 0), QSize(1280, 1024));
 }
 
 QT_END_NAMESPACE

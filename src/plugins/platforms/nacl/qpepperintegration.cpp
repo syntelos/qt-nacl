@@ -5,7 +5,6 @@
 #include "qpeppermain.h"
 #include "qpepperfontdatabase.h"
 
-
 #include <QtGui/private/qpixmap_raster_p.h>
 #include <QtGui/QPlatformWindow>
 #include <qbasicunixfontdatabase.h>
@@ -27,7 +26,7 @@ QPepperIntegration::QPepperIntegration()
     m_fontDatabase = 0;
     //qDebug() << "QPepperIntegration::QPepperIntegration done()";
 
-    QtPepperMain::globalInstance()->m_qtReadyForEvents = true;
+    QtPepperMain::get()->m_qtReadyForEvents = true;
 }
 
 QPepperIntegration::~QPepperIntegration()
@@ -49,19 +48,12 @@ QPixmapData *QPepperIntegration::createPixmapData(QPixmapData::PixelType type) c
 QPlatformWindow *QPepperIntegration::createPlatformWindow(QWidget *widget, WId winId) const
 {
     Q_UNUSED(winId);
-    //qDebug() << "QPepperIntegration::createPlatformWindow" << widget << widget->parent()
-    //         << widget->objectName() << widget->geometry();
+    qDebug() << "QPepperIntegration::createPlatformWindow" << widget << widget->parent()
+             << widget->objectName() << widget->geometry() << m_firstWindowCreated;
 
-    // Hack: The first window becomes a "fullscreen" window - meaning
-    // it will expand to fit the entire <embed> area.
-    if (!m_firstWindowCreated) {
-        m_firstWindowCreated = true;
-        widget->setWindowState(Qt::WindowFullScreen);
-    }
-
-    QPlatformWindow *platformWindow = new QPepperPlatformWindow(widget);
-    m_platformWindows.insert(widget, platformWindow);
-
+    QPepperPlatformWindow *platformWindow = new QPepperPlatformWindow(widget, !m_firstWindowCreated);
+    platformWindow->m_trackInstanceSize = true;
+    m_firstWindowCreated = true;
     return platformWindow;
 }
 
@@ -70,14 +62,7 @@ QWindowSurface *QPepperIntegration::createWindowSurface(QWidget *widget, WId win
     Q_UNUSED(winId);
    // qDebug() << "QPepperIntegration::createWindowSurface" << widget << widget->parentWidget();
 
-    // Window surfaces know about any "parent" window surfaces (for compositing)
-    QPepperWindowSurface *parentWindowSurface = 0;
-    if (widget->parentWidget() != 0) {
-        parentWindowSurface =
-            static_cast<QPepperWindowSurface*>(m_windowSurfaces.value(widget->parentWidget()->window()));
-    }
-    QPepperWindowSurface *windowSurface = new QPepperWindowSurface(widget, parentWindowSurface);
-    m_windowSurfaces.insert(widget, windowSurface);
+    QPepperWindowSurface *windowSurface = new QPepperWindowSurface(widget);
     return windowSurface;
 }
 

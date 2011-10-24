@@ -10,6 +10,7 @@
 #ifndef QT_NO_PEPPER_INTEGRATION
 
 PepperEventTranslator::PepperEventTranslator()
+:m_window(0)
 {
 }
 
@@ -49,7 +50,7 @@ bool PepperEventTranslator::processEvent(const pp::InputEvent& event)
 
 bool PepperEventTranslator::processMouseEvent(const pp::MouseInputEvent &event, PP_InputEvent_Type eventType)
 {
-    //qDebug() << "processMouseEvent" << event.GetPosition().x() << event.GetPosition().y();
+    //qDebug() << "processMouseEvent" << event.GetPosition().x() << event.GetPosition().y() << m_window;
     QPoint point(event.GetPosition().x(), event.GetPosition().y());
     //Qt::MouseButton button = translatePepperMouseButton(event.button);
     Qt::MouseButtons modifiers = translatePepperMouseModifiers(event.GetModifiers());
@@ -59,9 +60,9 @@ bool PepperEventTranslator::processMouseEvent(const pp::MouseInputEvent &event, 
     // ### strictly not correct, only the state for the released button should
     // be cleared.
     if (eventType == PP_INPUTEVENT_TYPE_MOUSEUP) {
-        QWindowSystemInterface::handleMouseEvent(widget, point, point, Qt::MouseButtons(Qt::NoButton));
+        QWindowSystemInterface::handleMouseEvent(m_window, point, point, Qt::MouseButtons(Qt::NoButton));
     } else {
-        QWindowSystemInterface::handleMouseEvent(widget, point, point, modifiers);
+        QWindowSystemInterface::handleMouseEvent(m_window, point, point, modifiers);
     }
 
     return true;

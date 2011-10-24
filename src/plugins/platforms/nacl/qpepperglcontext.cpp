@@ -7,10 +7,10 @@
 #include <ppapi/cpp/dev/surface_3d_dev.h>
 #include <qdebug.h>
 
-QPepperGLContext::QPepperGLContext(QtInstance *instance)
+QPepperGLContext::QPepperGLContext(QPepperInstance *instance)
     :m_instance(instance)
 {
-    QtInstance *m_instance;
+    QPepperInstance *m_instance;
     m_instance->pp_instance();
     m_context = 0;
     m_surface = 0;

@@ -42,7 +42,7 @@ void qtRunOnPepperThreadSynchronousImplementation(void (*fn)(void *), void *data
     call->wakeQtThread = true;
     call->done = false;
     QtModule::getCore()->CallOnMainThread(0, pp::CompletionCallback(&qtRunOnPepperThreadCallback, call), 0);
-    QtPepperMain *qtPepperMain = QtPepperMain::globalInstance();
+    QtPepperMain *qtPepperMain = QtPepperMain::get();
     QMutexLocker lock(&qtPepperMain->m_mutex);
     if (call->done)
         return;
@@ -60,16 +60,16 @@ void qtRunOnPepperThreadCallback(void* user_data, int32_t result)
         return;
     }
 
-    QtPepperMain *qtPepperMain = QtPepperMain::globalInstance();
+    QtPepperMain *qtPepperMain = QtPepperMain::get();
     QMutexLocker lock(&qtPepperMain->m_mutex);
     call->done = true;
-    QtPepperMain::globalInstance()->m_qtWait.wakeOne();
+    QtPepperMain::get()->m_qtWait.wakeOne();
     delete call;
 }
 
 Q_GLOBAL_STATIC(QtPepperMain, qtPepperMain);
 
-QtPepperMain *QtPepperMain::globalInstance()
+QtPepperMain *QtPepperMain::get()
 {
     return qtPepperMain();
 }
@@ -77,18 +77,21 @@ QtPepperMain *QtPepperMain::globalInstance()
 QtPepperMain::QtPepperMain()
 :m_mainFunction(0)
 ,m_mainInstance(0)
+,m_mainWindowSurface(0)
 ,m_qtRunning(false) // set when the qt thread is running/has been started
 ,m_qtReadyForEvents(false) // set when Qt is ready to handle events
 ,m_exitNow(false) // set when Qt should exit immediately.
-,m_screenResized(false) // set when the screen has been resized, cleared when the Qt thread has processed the resize
-,m_inFlush(false) // set when the pepper thread is flushing the graphichs buffer
+,m_qtShouldPark(false) // set when the Qt thread should park (wait)
 ,m_qtWaiting(false) // set when the Qt thread is waiting
+,m_pepperWaiting(false) // set when the screen has been resized, cleared when the Qt thread has processed the resize
+
 
 {
     extern void (*qt_pepper_wait)(int);
     qt_pepper_wait = qt_pepper_wait_handler;
     extern void (*qtRunOnPepperThreadPointer)(void (*fn)(void *), void *);
     qtRunOnPepperThreadPointer = qtRunOnPepperThreadImplementation;
+    m_callbackFactory.Initialize(this);
 }
 
 bool QtPepperMain::isQtStarted()
@@ -96,17 +99,102 @@ bool QtPepperMain::isQtStarted()
     return m_qtRunning;
 }
 
-void QtPepperMain::init(QtInstance *mainInstance)
-{
-    m_mainInstance = mainInstance;
-
-    extern pp::Instance *qtPepperInstance; // qglobal.cpp
-    qtPepperInstance = mainInstance;
-}
-
 void QtPepperMain::registerQtMainFunction(QtMainFunction qtMainFunction)
 {
     m_mainFunction = qtMainFunction;
+}
+
+void qtThreadWait_callback(void* user_data, int32_t result)
+{
+    Q_UNUSED(user_data);
+    Q_UNUSED(result);
+    QtPepperMain *qtPepperMain = QtPepperMain::get();
+    QMutexLocker lock(&qtPepperMain->m_mutex);
+    qtPepperMain->m_qtWait.wakeOne();
+}
+
+void QtPepperMain::qtThreadWait(int msec)
+{
+    if (m_exitNow)
+        return;
+
+    QMutexLocker lock(&m_mutex);
+    QtModule::getCore()->CallOnMainThread(msec, pp::CompletionCallback(&qtThreadWait_callback, 0), 0);
+    qtThreadWait_impl();
+}
+
+void QtPepperMain::qtThreadWait_impl()
+{
+    m_qtWaiting = true;
+
+    // Wake the pepper thread if it is waiting.
+    if (m_pepperWaiting) {
+        m_pepperWait.wakeOne();
+    }
+    m_qtWait.wait(&m_mutex);
+    m_qtWaiting = false;
+}
+
+void QtPepperMain::qtThreadWake()
+{
+    QMutexLocker lock(&m_mutex);
+    m_qtWait.wakeOne();
+}
+
+// This function is called by the pepper thread to make sure
+// the Qt thread is in a "parked" state, waiting on m_qtWait.
+// The Qt thread has two ways of entering this state:
+//   - Waiting for events/timers in the event loop.
+//   - Blocking in QPepperWindowSurface::beginPaint, waiting for a
+//     previous flush to complete.
+// In both cases the Qt thread sets m_qtWaiting.
+//
+// This function signals that the Qt thread should park itself,
+// and then waits for it to do so. In many cases there will be
+// no wait, since the Qt thread is in the parked state when idling.
+void QtPepperMain::parkQtThread()
+{
+    QMutexLocker lock(&m_mutex);
+    // Is the Qt thread already parked? If so this all is good
+    // and we can return immediately.
+    if (m_qtWaiting)
+        return;
+
+    // Wait for the Qt thread to park. Setting m_pepperWaiting signals
+    // that the Qt thread should wake the pepper thread.
+    m_pepperWaiting = true;
+    m_pepperWait.wait(&m_mutex);
+    m_pepperWaiting = false;
+}
+
+void QtPepperMain::resumeQtThread()
+{
+    m_qtWait.wakeOne();
+}
+
+/*void QtPepperMain::pepperThreadWait()
+{
+
+}
+
+void QtPepperMain::pepperThreadWake()
+{
+
+}
+*/
+
+void QtPepperMain::postJavascriptMessage(const QByteArray &message)
+{
+    QtModule::getCore()->CallOnMainThread(0,
+        m_callbackFactory.NewCallback(&QtPepperMain::postJavascriptMessage_impl, message), 0);
+}
+
+void QtPepperMain::postJavascriptMessage_impl(int32_t, const QByteArray &message)
+{
+    QPepperInstance *instance = QtPepperMain::get()->m_pepperInstances.value(0);
+    if (instance) {
+        instance->PostMessage(pp::Var(message.constData()));
+    }
 }
 
 void QtPepperMain::startQtMainThread()
@@ -116,7 +204,25 @@ void QtPepperMain::startQtMainThread()
 //    qDebug() << "Starting the main Qt thread";
 //    qDebug() << "From thread" << QString::number((quintptr) QThread::currentThread(), 16);
 
-    pthread_create(&m_qtMainThread, 0, qt_pepper_main_thread_function, this);
+    pthread_create(&m_qtMainThread, 0, qt_pepper_main_thread_function, 0);
+}
+
+void *qt_pepper_main_thread_function(void *)
+{
+    QtPepperMain::get()->qtMainThreadFunction();
+    return 0;
+}
+
+void QtPepperMain::qtMainThreadFunction()
+{
+   // qInstallMsgHandler(qtPepperMessageHandler);
+
+    int argc = 3;
+    const char * argv[] = { "", "-platform", "pepper" };
+    qt_pepper_main(argc, const_cast<char **>(argv));
+
+    m_qtRunning = false;
+    m_pepperWait.wakeOne();
 }
 
 void QtPepperMain::runOnPepperThread(void (*fn)(void *), void *data)
@@ -129,27 +235,42 @@ void QtPepperMain::runOnPepperThreadSynchronous(void (*fn)(void *), void *data)
     qtRunOnPepperThreadSynchronousImplementation(fn, data);
 }
 
-#ifndef QT_NO_PEPPER_INTEGRATION
+void QtPepperMain::addInstance(int key, QPepperInstance *instance)
+{
+    if (key == 0) {
+        m_mainInstance = instance;
+        extern pp::Instance *qtPepperInstance; // qglobal.cpp
+        qtPepperInstance = m_mainInstance;
+    }
 
-QtInstance *QtPepperMain::instance()
+    m_pepperInstances.insert(key, instance);
+}
+
+void QtPepperMain::removeInstance(int key)
+{
+    m_pepperInstances.remove(key);
+}
+
+void QtPepperMain::addWindowSurface(int key, QPepperWindowSurface *surface)
+{
+    m_windowSurfaces.insert(key, surface);
+}
+
+void QtPepperMain::removeWindowSurface(int key)
+{
+    m_windowSurfaces.remove(key);
+}
+
+QPepperInstance *QtPepperMain::instance()
 {
     return m_mainInstance;
 }
 
-#ifndef QT_PEPPER_DELAY_GRAPHICSCONTEXT_CREATION
-pp::ImageData QtPepperMain::imageData()
-{
-    return m_imageData;
-}
-#endif
-#endif
-
+/*
 void QtPepperMain::qtShutDown()
 {
-    m_qtRunning = false;
-    m_pepperWait.wakeOne();
 }
-
+*/
 void qtPepperMessageHandlerPrinter(void *msg)
 {
     const char * test = reinterpret_cast<const char *>(msg);
@@ -163,52 +284,7 @@ void qtPepperMessageHandler(QtMsgType typ, const char *msg)
     qtRunOnPepperThreadImplementation(qtPepperMessageHandlerPrinter, const_cast<char *>(qstrdup(msg)));
 }
 
-void *qt_pepper_main_thread_function(void *data)
-{
-    Q_UNUSED(data);
-    // qDebug() << "QtPepperMainThread::run entered" <<QString::number((quintptr) QThread::currentThread(), 16);
-    QtPepperMain *qtPepperMain = QtPepperMain::globalInstance();
-
-   // qInstallMsgHandler(qtPepperMessageHandler);
-
-    int argc = 3;
-    const char * argv[] = { "", "-platform", "pepper" };
-    qt_pepper_main(argc, const_cast<char **>(argv));
-
-    qtPepperMain->qtShutDown(); // ### may be to early to call this.. what about global destructors?
-
-    return 0;
-}
-
-void qt_pepper_wakeup(void* user_data, int32_t result)
-{
-    Q_UNUSED(user_data);
-    Q_UNUSED(result);
-    QtPepperMain *qtPepperMain = QtPepperMain::globalInstance();
-    QMutexLocker lock(&qtPepperMain->m_mutex);
-    qtPepperMain->m_qtWait.wakeOne();
-}
-
 void qt_pepper_wait_handler(int msec)
 {
-    QtPepperMain *qtPepperMain = QtPepperMain::globalInstance();
-    if (qtPepperMain->m_exitNow)
-        return;
-
-    QMutexLocker lock(&qtPepperMain->m_mutex);
-    QtModule::getCore()->CallOnMainThread(msec, pp::CompletionCallback(&qt_pepper_wakeup, 0), 0);
-    qtPepperMain->m_qtWaiting = true;
-
-    // If there is a pending resize the pepper thread might be waiting
-    // for the Qt thread to sleep. Wake it.
-    if (qtPepperMain->m_screenResized) {
-        qtPepperMain->m_pepperWait.wakeOne();
-    }
-    qtPepperMain->m_qtWait.wait(&qtPepperMain->m_mutex);
-    qtPepperMain->m_qtWaiting = false;
+    QtPepperMain::get()->qtThreadWait(msec);
 }
-
-#ifndef QT_NO_PEPPER_INTEGRATION
-QSize toQSize(pp::Size size) { return QSize(size.width(), size.height()); }
-pp::Size toPPSize(const QSize &size) { return pp::Size(size.width(), size.height()); }
-#endif

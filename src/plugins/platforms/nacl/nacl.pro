@@ -22,6 +22,7 @@ SOURCES += $$PWD/lighthousepluginmain.cpp \
            $$PWD/qpepperwindowsurface.cpp \
            $$PWD/qpepperfontengine.cpp \
            $$PWD/qpepperglcontext.cpp \
+           $$PWD/qpepperhelpers.cpp \
 
 HEADERS += $$PWD/peppereventtranslator.h \
            $$PWD/qpepperintegration.h \
@@ -33,8 +34,12 @@ HEADERS += $$PWD/peppereventtranslator.h \
            $$PWD/qpepperscreen.h \
            $$PWD/qpepperfontengine.h \
            $$PWD/qpepperglcontext.h \
+           $$PWD/qpepperhelpers.h \
 
 RESOURCES += fonts.qrc
+
+OTHER_FILES += $$PWD/../../../../tools/nacldemoserver/check_browser.js \
+               $$PWD/../../../../tools/nacldemoserver/qtnaclloader.js
 
 CONFIG += static
 LIBS += -lppapi -lppapi_cpp -lppapi_gles2 -lsrpc -limc_syscalls -lplatform -lgio

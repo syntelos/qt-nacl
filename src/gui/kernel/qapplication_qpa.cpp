@@ -615,6 +615,7 @@ void QApplication::setMainWidget(QWidget *mainWidget)
 
 void QApplicationPrivate::processMouseEvent(QWindowSystemInterfacePrivate::MouseEvent *e)
 {
+  //  qDebug() << "QApplicationPrivate::processMouseEvent" << e << e->widget;
     if (!e->widget)
        return;
 

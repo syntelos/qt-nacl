@@ -20,9 +20,8 @@ QtModule::QtModule()
 
 QtModule::~QtModule()
 {
-#ifndef QT_PEPPER_STANDALONE_MODE
     // Attempt sane shutdown:
-    QtPepperMain *pepperMain = QtPepperMain::globalInstance();
+    QtPepperMain *pepperMain = QtPepperMain::get();
     QMutexLocker lock(&pepperMain->m_mutex);
     pepperMain->m_exitNow = true;
     QTimer::singleShot(0, qApp, SLOT(quit()));
@@ -34,7 +33,6 @@ QtModule::~QtModule()
         pepperMain->m_qtWait.wakeOne();
         pepperMain->m_pepperWait.wait(&pepperMain->m_mutex, 10);
     }
-#endif
     glTerminatePPAPI();
 }
 
@@ -42,12 +40,24 @@ bool QtModule::Init()
 {
     globalCore = core();
     bool glOk = glInitializePPAPI(get_browser_interface()) == GL_TRUE;
+
+    QtPepperMain *pepperMain = QtPepperMain::get();
+
+    qDebug() << "QtModule::Init" << this;
+
+    // Start the main Qt thread. The thread will call main() in
+    // the application code, construct the QApplication object,
+    // load the pepper lighthouse plugin, create the GUI and
+    // then eventually go to sleep somewhere in the lighthouse event
+    // dispatcher.
+    pepperMain->startQtMainThread();
     return true;
 }
 
 pp::Instance* QtModule::CreateInstance(PP_Instance instance)
 {
-    return new QtInstance(instance);
+    qDebug() << "QtModule::CreateInstance" << this;
+    return new QPepperInstance(instance);
 }
 
 pp::Core *QtModule::getCore()
@@ -57,8 +67,17 @@ pp::Core *QtModule::getCore()
 
 namespace pp {
 
+
+
 Module* CreateModule() {
-    return new QtModule();
+    Module* leModule = 0;
+    if (!leModule)
+        leModule = new QtModule();
+    qDebug() << "CreateModule() " << leModule;
+
+    return leModule;
+
+
 }
 
 }

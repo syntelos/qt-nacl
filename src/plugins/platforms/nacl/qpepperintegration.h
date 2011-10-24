@@ -33,8 +33,6 @@ private:
     QPepperScreen *m_pepperScreen;
     mutable bool m_firstWindowCreated;
     mutable QPepperFontDatabase *m_fontDatabase;
-    mutable QHash<QWidget *, QWindowSurface *>m_windowSurfaces;
-    mutable QHash<QWidget *, QPlatformWindow *>m_platformWindows;
 };
 
 QT_END_NAMESPACE
