@@ -153,46 +153,6 @@ function moduleDidEndLoad() {
 // windows. This function responds by creating <embed>
 // nacl tags with appropriate attributes.
 function handleMessage(message_event) {
-    //console.log("Message " + message_event.data)
-    var message = message_event.data;
-    var lastUnderscore = message.lastIndexOf("_");
-    if (lastUnderscore == -1)
-        return;
-    var windowId = message.slice(lastUnderscore + 1);
-
-    var embedElement = this.qtNaClLoader.windows[windowId];
-    if (embedElement === undefined) {
-        var embedElement = document.createElement('embed');
-        this.qtNaClLoader.windows[windowId] = embedElement;
-    }
-
-    if (message.indexOf("qt_create_window") != -1) {
-        embedElement.setAttribute('id', "qt_window");
-        embedElement.setAttribute('qt_window_id', windowId);
-
-        embedElement.setAttribute('src', this.qtNaClLoader.name + ".nmf");
-        embedElement.setAttribute('type', "application/x-nacl");
-
-        embedElement.style.position="relative";
-        embedElement.style.visibility="hidden";
-
-        this.appendChild(embedElement);
-    } else if (message.indexOf("qt_set_window_geometry") != -1) {
-        function extractNumber(message, key) {
-            var begin = message.indexOf(key) + key.length;
-            var end = message.indexOf("_", begin + 1);
-            return message.slice(begin, end);
-        }
-        embedElement.setAttribute('left',   extractNumber(message, "_x_"));
-        embedElement.setAttribute('top',    extractNumber(message, "_y_"));
-        embedElement.setAttribute('width',  extractNumber(message, "_width_"));
-        embedElement.setAttribute('height', extractNumber(message, "_height_"));
-    } else if (message.indexOf("qt_show_window") != -1) {
-        embedElement.style.visibility="visible";
-    } else if (message.indexOf("qt_hide_window") != -1) {
-        embedElement.style.visibility="hidden";
-    }
-
     appendToEventLog(message_event.data);
 }
 

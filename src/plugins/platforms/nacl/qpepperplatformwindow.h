@@ -28,9 +28,7 @@ public:
     bool m_trackInstanceSize;
     quint32 m_windowId;
 private:
-    void postJavascriptMessage(const QByteArray &message);
     mutable QPepperGLContext *m_pepperGlContext;
-
 };
 
 QT_END_NAMESPACE
