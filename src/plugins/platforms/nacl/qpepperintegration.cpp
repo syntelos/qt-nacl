@@ -53,6 +53,8 @@ QPlatformWindow *QPepperIntegration::createPlatformWindow(QWidget *widget, WId w
 
     QPepperPlatformWindow *platformWindow = new QPepperPlatformWindow(widget, !m_firstWindowCreated);
     platformWindow->m_trackInstanceSize = true;
+    if (!m_firstWindowCreated)
+        widget->setWindowState(Qt::WindowFullScreen);
     m_firstWindowCreated = true;
     return platformWindow;
 }

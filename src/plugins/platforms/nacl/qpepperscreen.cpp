@@ -3,11 +3,12 @@
 */
 #include "qpepperscreen.h"
 #include "qpeppermain.h"
+#include "qpepperhelpers.h"
 
 QT_BEGIN_NAMESPACE
 
 /*
-    A pepper screen corresponds to the browser viewport.
+    A pepper screen corresponds to the qt div tag
 */
 
 QPepperScreen::QPepperScreen()
@@ -17,8 +18,10 @@ QPepperScreen::QPepperScreen()
 
 QRect QPepperScreen::geometry() const
 {
-    // ### get viewport size
-    return QRect(QPoint(0, 0), QSize(1280, 1024));
+    QPepperInstance *instance = QtPepperMain::get()->m_mainInstance;
+    if (!instance)
+        return QRect();
+    return toQRect(QtPepperMain::get()->m_mainInstance->m_currentGeometry);
 }
 
 QT_END_NAMESPACE

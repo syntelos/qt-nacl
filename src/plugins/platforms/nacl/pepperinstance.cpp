@@ -42,7 +42,7 @@ QPepperInstance::~QPepperInstance()
     delete m_imageData2D;
     delete m_frameBuffer;
 
-    QtPepperMain::get()->removeInstance(0);
+    QtPepperMain::get()->setInstance(0);
 }
 
 bool QPepperInstance::Init(uint32_t argc, const char* argn[], const char* argv[])
@@ -62,7 +62,7 @@ bool QPepperInstance::Init(uint32_t argc, const char* argn[], const char* argv[]
     qDebug() << "PepperInstance::init" << m_windowId;
 
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE | PP_INPUTEVENT_CLASS_WHEEL | PP_INPUTEVENT_CLASS_KEYBOARD);
-    QtPepperMain::get()->addInstance(m_windowId, this); // ### pass arguments?
+    QtPepperMain::get()->setInstance(this); // ### pass arguments?
 
     return true;
 }
@@ -78,7 +78,6 @@ void QPepperInstance::DidChangeView(const Rect& geometry, const Rect& clip)
     qDebug() << "QPepperInstance::DidChangeView" << m_windowId << geometry.size().width() << geometry.size().height();
 
     QtPepperMain *pepperMain = QtPepperMain::get();
-    QPepperWindowSurface *windowSurface = pepperMain->m_windowSurfaces.value(m_windowId);
 
     // Delete the previous framebuffer and graphics context. Park the Qt
     // thread first, to make sure we don't remove the frame buffer while
@@ -87,12 +86,7 @@ void QPepperInstance::DidChangeView(const Rect& geometry, const Rect& clip)
     delete m_context2D;
     delete m_imageData2D;
     delete m_frameBuffer;
-/*
-    while (windowSurface->m_isInPaint) {
-        pepperMain->resumeQtThread();
-        pepperMain->parkQtThread();
-    }
-*/
+
     // Create new graphics context and frame buffer.
     m_context2D = new Graphics2D(this, geometry.size(), false);
     if (!BindGraphics(*m_context2D)) {
@@ -104,19 +98,14 @@ void QPepperInstance::DidChangeView(const Rect& geometry, const Rect& clip)
                                geometry.size().width(), geometry.size().height(),
                                m_imageData2D->stride(), QImage::Format_ARGB32_Premultiplied);
 
-    // Set the frame buffer on the window surface.
-    if (windowSurface) {
-        windowSurface->setPepperInstance(this);
-        windowSurface->setFrameBuffer(m_frameBuffer);
-    } else {
-        m_frameBuffer->fill(Qt::red);
-        m_context2D->PaintImageData(*m_imageData2D, pp::Point(0,0));
-        m_context2D->Flush(pp::CompletionCallback(flush_callback, 0));
-    }
+    // Set the frame buffer on the compositor
+    pepperMain->m_compositor.setRasterFrameBuffer(m_frameBuffer);
+    pepperMain->m_compositor.composit();
 
     // Wake Qt again
+    QWindowSystemInterface::handleScreenGeometryChange(0);
     pepperMain->resumeQtThread();
-    qDebug() << "QPepperInstance::DidChangeView done";
+//    qDebug() << "QPepperInstance::DidChangeView done";
 }
 
 void QPepperInstance::DidChangeFocus(bool has_focus)
@@ -131,15 +120,7 @@ bool QPepperInstance::HandleInputEvent(const pp::InputEvent& event)
     if (pepperMain->m_qtReadyForEvents == false)
         return false;
 
-    if (m_eventTranslator.m_window == 0) {
-        QPepperWindowSurface *windowSurface = pepperMain->m_windowSurfaces.value(0);
-        if (windowSurface == 0)
-            return false;
-
-        m_eventTranslator.m_window = windowSurface->window();
-    }
-
-    // Translate and post event to Qt via QWindowSystemInterface.
+    // Translate and post event to Qt via the compositor
     bool ret = m_eventTranslator.processEvent(event);
 
     // The Qt thread is most likely waiting on a timer timeout,
@@ -226,6 +207,10 @@ void QPepperInstance::flushCompletedCallback(int32_t)
     QtPepperMain *pepperMain = QtPepperMain::get();
     QMutexLocker lock(&pepperMain->m_mutex);
     m_inFlush = false;
+
+    //qDebug() << "flushCompleted" << QThread::currentThreadId();
+    QTimer::singleShot(0, pepperMain, SLOT(flushCompleted()));
+
     if (pepperMain->m_qtWaiting)
         pepperMain->m_qtWait.wakeOne();
 }

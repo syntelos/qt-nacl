@@ -8,7 +8,6 @@
 #include <QtGui/QPlatformScreen>
 #include "qpepperscreen.h"
 
-
 QT_BEGIN_NAMESPACE
 
 class QPlatformFontDatabase; 

@@ -28,10 +28,11 @@ QPepperWindowSurface::QPepperWindowSurface(QWidget *window)
     m_frameBuffer = 0;
     m_ownsFrameBuffer = false;
     m_isInPaint = false;
+    m_compositor = &QtPepperMain::get()->m_compositor;
 
     qDebug() << "QPepperWindowSurface::QPepperWindowSurface" << m_platformWindow->windowId();
 
-    QtPepperMain::get()->addWindowSurface(m_platformWindow->windowId(), this);
+    m_compositor->setWindowSurface(m_platformWindow, this);
 
 //    createFrameBuffer(window->size());
 }
@@ -53,12 +54,15 @@ void QPepperWindowSurface::createFrameBuffer(QSize size)
         delete m_frameBuffer;
     m_frameBuffer = new QImage(size, QImage::Format_ARGB32_Premultiplied);
     m_ownsFrameBuffer = true;
+
+    m_compositor->setFrameBuffer(this,  m_frameBuffer);
+
 }
 
 void QPepperWindowSurface::setFrameBuffer(QImage *frameBuffer)
 {
-    if (m_isInPaint)
-        qFatal("QPepperWindowSurface::setFrameBuffer in paint.");
+//    if (m_isInPaint)
+        qFatal("QPepperWindowSurface::setFrameBuffer called.");
 
     if (m_ownsFrameBuffer)
         delete m_frameBuffer;
@@ -86,12 +90,7 @@ void QPepperWindowSurface::beginPaint(const QRegion &region)
 //    qDebug() << "QPepperWindowSurface::beginPaint";
     m_isInPaint = true;
 
-    // Check if the pepper thread is flushing the backing
-    // buffer. If this is the case the Qt thread cannot
-    // start painting to it yet - this will cause flickering
-    // if pepper flushes a half-painted frame.
-    if (m_pepperInstance)
-        m_pepperInstance->waitForFlushed();
+    m_compositor->waitForFlushed(this);
 
     QWindowSurface::beginPaint(region);
 }
@@ -120,8 +119,7 @@ void QPepperWindowSurface::flush(QWidget *widget, const QRegion &region, const Q
 
    // qDebug() << "QPepperWindowSurface::flush" << QtModule::getCore()->IsMainThread();
 
-    if (m_pepperInstance)
-        m_pepperInstance->flush();
+    m_compositor->flush(this);
 }
 
 void QPepperWindowSurface::resize(const QSize &size)

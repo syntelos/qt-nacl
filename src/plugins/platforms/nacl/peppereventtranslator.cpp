@@ -2,10 +2,15 @@
     Licensed under the MIT license.
 */
 #include "peppereventtranslator.h"
-#include "3rdparty/keyboard_codes_posix.h"
+
+#include <ppapi/cpp/point.h>
+#include <ppapi/cpp/var.h>
+
 #include <QWindowSystemInterface>
-#include "ppapi/cpp/point.h"
-#include "ppapi/cpp/var.h"
+
+#include "3rdparty/keyboard_codes_posix.h"
+#include "qpeppermain.h"
+
 
 #ifndef QT_NO_PEPPER_INTEGRATION
 
@@ -55,14 +60,21 @@ bool PepperEventTranslator::processMouseEvent(const pp::MouseInputEvent &event, 
     //Qt::MouseButton button = translatePepperMouseButton(event.button);
     Qt::MouseButtons modifiers = translatePepperMouseModifiers(event.GetModifiers());
 
+    QPoint localPoint = point;
+    QWidget *window = QtPepperMain::get()->m_compositor.windowAt(point);
+    if (window) {
+        localPoint = point - window->pos();
+//        qDebug() << window << window->pos() << point << localPoint;
+    }
+
     // Qt mouse button state is state *after* the mouse event, send NoButton
     // on mouse up.
     // ### strictly not correct, only the state for the released button should
     // be cleared.
     if (eventType == PP_INPUTEVENT_TYPE_MOUSEUP) {
-        QWindowSystemInterface::handleMouseEvent(m_window, point, point, Qt::MouseButtons(Qt::NoButton));
+        QWindowSystemInterface::handleMouseEvent(window, localPoint, point, Qt::MouseButtons(Qt::NoButton));
     } else {
-        QWindowSystemInterface::handleMouseEvent(m_window, point, point, modifiers);
+        QWindowSystemInterface::handleMouseEvent(window, localPoint, point, modifiers);
     }
 
     return true;
@@ -70,11 +82,13 @@ bool PepperEventTranslator::processMouseEvent(const pp::MouseInputEvent &event, 
 
 bool PepperEventTranslator::processWheelEvent(const pp::WheelInputEvent &event)
 {
+    QWidget *window = QtPepperMain::get()->m_compositor.keyWindow();
+
     if (event.GetTicks().x() != 0) {
-      //  QWindowSystemInterface::handleWheelEvent(0, QPoint(), QPoint(), event.wheel_ticks_x, Qt::Horizontal);
+        QWindowSystemInterface::handleWheelEvent(window, QPoint(), QPoint(), event.GetTicks().x(), Qt::Horizontal);
     }
     if (event.GetTicks().y()!= 0) {
-     //   QWindowSystemInterface::handleWheelEvent(0, QPoint(), QPoint(), event.wheel_ticks_y, Qt::Vertical);
+        QWindowSystemInterface::handleWheelEvent(window,  QPoint(), QPoint(), event.GetTicks().x(), Qt::Vertical);
     }
     return true;
 }
@@ -97,18 +111,19 @@ bool PepperEventTranslator::processKeyEvent(const pp::KeyboardInputEvent &event,
     Qt::KeyboardModifiers modifiers = translatePepperKeyModifiers(event.GetModifiers());
     bool alphanumretic;
     Qt::Key key = translatePepperKey(event.GetKeyCode(), &alphanumretic);
+    QWidget *window = QtPepperMain::get()->m_compositor.keyWindow();
 
     if (eventType == PP_INPUTEVENT_TYPE_KEYDOWN) {
         currentPepperKey = event.GetKeyCode();
         if (!alphanumretic) {
-            QWindowSystemInterface::handleKeyEvent(0, QEvent::KeyPress, key, modifiers);
+            QWindowSystemInterface::handleKeyEvent(window, QEvent::KeyPress, key, modifiers);
            // qDebug() << "send Key Down" << event.GetKeyCode() << hex << modifiers;
         }
     }
 
     if (eventType == PP_INPUTEVENT_TYPE_KEYUP) {
        // qDebug() << "send Key Up" << event.key_code << hex << modifiers;
-        QWindowSystemInterface::handleKeyEvent(0, QEvent::KeyRelease, key,  modifiers);
+        QWindowSystemInterface::handleKeyEvent(window, QEvent::KeyRelease, key,  modifiers);
     }
     return true;
 }
@@ -118,7 +133,8 @@ bool PepperEventTranslator::processCharacterEvent(const pp::KeyboardInputEvent &
     QString text = QString::fromUtf8(event.GetCharacterText().AsString().c_str()); // ### wide characters?
     Qt::KeyboardModifiers modifiers = translatePepperKeyModifiers(event.GetModifiers());
     Qt::Key key = translatePepperKey(currentPepperKey, 0);
-    QWindowSystemInterface::handleKeyEvent(0, QEvent::KeyPress, key, modifiers, text);
+    QWidget *window = QtPepperMain::get()->m_compositor.keyWindow();
+    QWindowSystemInterface::handleKeyEvent(window, QEvent::KeyPress, key, modifiers, text);
 
     return true;
 }

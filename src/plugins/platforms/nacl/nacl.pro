@@ -23,6 +23,7 @@ SOURCES += $$PWD/lighthousepluginmain.cpp \
            $$PWD/qpepperfontengine.cpp \
            $$PWD/qpepperglcontext.cpp \
            $$PWD/qpepperhelpers.cpp \
+           $$PWD/qpeppercompositor.cpp \
 
 HEADERS += $$PWD/peppereventtranslator.h \
            $$PWD/qpepperintegration.h \
@@ -35,6 +36,7 @@ HEADERS += $$PWD/peppereventtranslator.h \
            $$PWD/qpepperfontengine.h \
            $$PWD/qpepperglcontext.h \
            $$PWD/qpepperhelpers.h \
+           $$PWD/qpeppercompositor.h \
 
 RESOURCES += fonts.qrc
 

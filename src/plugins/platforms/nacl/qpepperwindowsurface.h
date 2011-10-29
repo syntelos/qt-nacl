@@ -17,6 +17,7 @@
 #include "qpepperscreen.h"
 #include "qpepperplatformwindow.h"
 #include "pepperinstance.h"
+#include "qpeppercompositor.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -47,6 +48,7 @@ protected:
 private:
     QPepperPlatformWindow *m_platformWindow;
     QPepperInstance *m_pepperInstance;
+    QPepperCompositor *m_compositor;
 
     QImage *m_frameBuffer;
     bool m_ownsFrameBuffer;

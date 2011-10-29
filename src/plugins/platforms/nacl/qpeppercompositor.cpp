@@ -100,7 +100,7 @@ void QPepperCompositor::waitForFlushed(QWindowSurface *surface)
     QtPepperMain *pepperMain = QtPepperMain::get();
     while (m_pepperInstance->m_inFlush) {
         QMutexLocker lock(&pepperMain->m_mutex);
-        QtPepperMain::get()->qtThreadWait_impl();
+        pepperMain->qtThreadWait_impl();
     }
 }
 
@@ -126,12 +126,20 @@ void QPepperCompositor::flushCompleted()
 
 QWidget *QPepperCompositor::windowAt(QPoint p)
 {
-    return m_windowStack.at(0);
+    int index = m_windowStack.count() -1;
+    while (index >= 0) {
+        QPepperCompositedWindow &compositedWindow
+                = m_compositedWindows[m_windowStack.at(index)];
+        if (compositedWindow.visible && compositedWindow.geometry.contains(p))
+            return m_windowStack.at(index);
+        --index;
+    }
+    return 0;
 }
 
 QWidget *QPepperCompositor::keyWindow()
 {
-    return m_windowStack.at(0);
+    return m_windowStack.at(m_windowStack.count() - 1);
 }
 
 void QPepperCompositor::maybeComposit()
@@ -164,3 +172,4 @@ void QPepperCompositor::composit()
     }
     m_pepperInstance->flush();
 }
+

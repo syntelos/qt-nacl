@@ -77,7 +77,6 @@ QtPepperMain *QtPepperMain::get()
 QtPepperMain::QtPepperMain()
 :m_mainFunction(0)
 ,m_mainInstance(0)
-,m_mainWindowSurface(0)
 ,m_qtRunning(false) // set when the qt thread is running/has been started
 ,m_qtReadyForEvents(false) // set when Qt is ready to handle events
 ,m_exitNow(false) // set when Qt should exit immediately.
@@ -172,17 +171,6 @@ void QtPepperMain::resumeQtThread()
     m_qtWait.wakeOne();
 }
 
-/*void QtPepperMain::pepperThreadWait()
-{
-
-}
-
-void QtPepperMain::pepperThreadWake()
-{
-
-}
-*/
-
 void QtPepperMain::postJavascriptMessage(const QByteArray &message)
 {
     QtModule::getCore()->CallOnMainThread(0,
@@ -191,10 +179,15 @@ void QtPepperMain::postJavascriptMessage(const QByteArray &message)
 
 void QtPepperMain::postJavascriptMessage_impl(int32_t, const QByteArray &message)
 {
-    QPepperInstance *instance = QtPepperMain::get()->m_pepperInstances.value(0);
-    if (instance) {
-        instance->PostMessage(pp::Var(message.constData()));
+    QPepperInstance *instance = QtPepperMain::get()->m_mainInstance;
+    if (m_mainInstance) {
+        m_mainInstance->PostMessage(pp::Var(message.constData()));
     }
+}
+
+void MainQtThread::run()
+{
+    qt_pepper_main_thread_function(0);
 }
 
 void QtPepperMain::startQtMainThread()
@@ -205,6 +198,8 @@ void QtPepperMain::startQtMainThread()
 //    qDebug() << "From thread" << QString::number((quintptr) QThread::currentThread(), 16);
 
     pthread_create(&m_qtMainThread, 0, qt_pepper_main_thread_function, 0);
+    //m_mainQtThread.start();
+    //this->moveToThread(&m_mainQtThread);
 }
 
 void *qt_pepper_main_thread_function(void *)
@@ -235,30 +230,12 @@ void QtPepperMain::runOnPepperThreadSynchronous(void (*fn)(void *), void *data)
     qtRunOnPepperThreadSynchronousImplementation(fn, data);
 }
 
-void QtPepperMain::addInstance(int key, QPepperInstance *instance)
+void QtPepperMain::setInstance(QPepperInstance *instance)
 {
-    if (key == 0) {
-        m_mainInstance = instance;
-        extern pp::Instance *qtPepperInstance; // qglobal.cpp
-        qtPepperInstance = m_mainInstance;
-    }
-
-    m_pepperInstances.insert(key, instance);
-}
-
-void QtPepperMain::removeInstance(int key)
-{
-    m_pepperInstances.remove(key);
-}
-
-void QtPepperMain::addWindowSurface(int key, QPepperWindowSurface *surface)
-{
-    m_windowSurfaces.insert(key, surface);
-}
-
-void QtPepperMain::removeWindowSurface(int key)
-{
-    m_windowSurfaces.remove(key);
+    m_mainInstance = instance;
+    extern pp::Instance *qtPepperInstance; // qglobal.cpp
+    qtPepperInstance = m_mainInstance;
+    m_compositor.setPepperInstance(instance);
 }
 
 QPepperInstance *QtPepperMain::instance()
@@ -266,11 +243,16 @@ QPepperInstance *QtPepperMain::instance()
     return m_mainInstance;
 }
 
-/*
+
 void QtPepperMain::qtShutDown()
 {
 }
-*/
+
+void QtPepperMain::flushCompleted()
+{
+    m_compositor.flushCompleted();
+}
+
 void qtPepperMessageHandlerPrinter(void *msg)
 {
     const char * test = reinterpret_cast<const char *>(msg);

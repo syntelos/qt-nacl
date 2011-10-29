@@ -6,6 +6,7 @@
 #include "qpepperglcontext.h"
 #include "qpeppermain.h"
 #include "peppermodule.h"
+#include "qpeppercompositor.h"
 
 #include <qdebug.h>
 
@@ -15,9 +16,16 @@ QPepperPlatformWindow::QPepperPlatformWindow(QWidget *windowWidget, bool isFirst
 :QPlatformWindow(windowWidget)
 ,m_isVisible(false)
 ,m_pepperGlContext(0)
+,m_compositor(&QtPepperMain::get()->m_compositor)
 {
     m_windowId = isFirstWindow ? 0 : quint32(this);
+    m_compositor->addRasterWindow(this);
     qDebug() << "QPepperPlatformWindow::QPepperPlatformWindow" << m_windowId << isFirstWindow;
+}
+
+QPepperPlatformWindow::~QPepperPlatformWindow()
+{
+    m_compositor->removeWindow(this);
 }
 
 QPlatformGLContext *QPepperPlatformWindow::glContext() const
@@ -37,18 +45,22 @@ WId QPepperPlatformWindow::winId() const
 
 void QPepperPlatformWindow::setVisible(bool visible)
 {
+    m_compositor->setVisible(this, visible);
 }
 
 void QPepperPlatformWindow::raise()
 {
+    m_compositor->raise(this);
 }
 
 void QPepperPlatformWindow::lower()
 {
+    m_compositor->lower(this);
 }
 
 void QPepperPlatformWindow::setGeometry(const QRect &rect)
 {
+    m_compositor->setGeometry(this, rect);
 }
 
 quint32 QPepperPlatformWindow::windowId()

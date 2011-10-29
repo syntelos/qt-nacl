@@ -5,8 +5,10 @@
 #define QPEPPERPLATFORMWINDOW_H
 
 #include <QtGui/QPlatformWindow>
+
 #include "qpepperhelpers.h"
-#include <ppapi/cpp/completion_callback.h>
+#include "qpeppercompositor.h"
+
 
 QT_BEGIN_NAMESPACE
 
@@ -16,6 +18,7 @@ class QPepperPlatformWindow : public QPlatformWindow
 {
 public:
     QPepperPlatformWindow(QWidget *windowWidget, bool isFirstWindow);
+    ~QPepperPlatformWindow();
     QPlatformGLContext *glContext() const;
     WId winId() const;
     void setVisible(bool visible);
@@ -29,6 +32,7 @@ public:
     quint32 m_windowId;
 private:
     mutable QPepperGLContext *m_pepperGlContext;
+    QPepperCompositor *m_compositor;
 };
 
 QT_END_NAMESPACE

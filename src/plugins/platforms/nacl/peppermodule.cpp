@@ -43,8 +43,6 @@ bool QtModule::Init()
 
     QtPepperMain *pepperMain = QtPepperMain::get();
 
-    qDebug() << "QtModule::Init" << this;
-
     // Start the main Qt thread. The thread will call main() in
     // the application code, construct the QApplication object,
     // load the pepper lighthouse plugin, create the GUI and
@@ -56,7 +54,6 @@ bool QtModule::Init()
 
 pp::Instance* QtModule::CreateInstance(PP_Instance instance)
 {
-    qDebug() << "QtModule::CreateInstance" << this;
     return new QPepperInstance(instance);
 }
 
@@ -67,17 +64,8 @@ pp::Core *QtModule::getCore()
 
 namespace pp {
 
-
-
 Module* CreateModule() {
-    Module* leModule = 0;
-    if (!leModule)
-        leModule = new QtModule();
-    qDebug() << "CreateModule() " << leModule;
-
-    return leModule;
-
-
+    return new QtModule();
 }
 
 }

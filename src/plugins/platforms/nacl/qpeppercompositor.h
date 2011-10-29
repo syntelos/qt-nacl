@@ -20,8 +20,9 @@ public:
     QList<QWidget *> childWindows;
 };
 
-class QPepperCompositor
+class QPepperCompositor //: public QObject
 {
+//Q_OBJECT
 public:
     QPepperCompositor();
 // Client API
@@ -41,15 +42,15 @@ public:
 // Server API
     void setPepperInstance(QPepperInstance *pepperInstance);
     void setRasterFrameBuffer(QImage *frameBuffer);
+//public slots:
     void flushCompleted();
 
 // Misc API
     QWidget *windowAt(QPoint p);
     QWidget *keyWindow();
-
-private:
     void maybeComposit();
     void composit();
+private:
     QHash<QWidget *, QPepperCompositedWindow> m_compositedWindows;
     QList<QWidget *> m_windowStack;
     QPepperInstance *m_pepperInstance;

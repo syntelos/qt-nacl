@@ -6,6 +6,7 @@
 #include <QAtomicInt>
 
 pp::Rect toPPRect(const QRect rect);
+QRect toQRect(pp::Rect rect);
 QSize toQSize(pp::Size size);
 pp::Size toPPSize(const QSize &size);
 

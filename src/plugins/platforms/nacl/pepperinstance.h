@@ -30,7 +30,7 @@ public:
     virtual bool HandleDocumentLoad(const pp::URLLoader& url_loader);
     virtual void HandleMessage(const pp::Var& message);
 
-    // Interface for QPepperWindowSurface. Called from the Qt thread.
+    // Interface for QPepperCompositor. Called from the Qt thread.
     void flush();
     void waitForFlushed();
 
