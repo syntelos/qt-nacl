@@ -57,6 +57,7 @@ bool PepperEventTranslator::processMouseEvent(const pp::MouseInputEvent &event, 
 {
     //qDebug() << "processMouseEvent" << event.GetPosition().x() << event.GetPosition().y() << m_window;
     QPoint point(event.GetPosition().x(), event.GetPosition().y());
+    currentMouseGlobalPos = point;
     //Qt::MouseButton button = translatePepperMouseButton(event.button);
     Qt::MouseButtons modifiers = translatePepperMouseModifiers(event.GetModifiers());
 
@@ -82,13 +83,13 @@ bool PepperEventTranslator::processMouseEvent(const pp::MouseInputEvent &event, 
 
 bool PepperEventTranslator::processWheelEvent(const pp::WheelInputEvent &event)
 {
-    QWidget *window = QtPepperMain::get()->m_compositor.keyWindow();
+    QWidget *window = QtPepperMain::get()->m_compositor.windowAt(currentMouseGlobalPos);
 
     if (event.GetTicks().x() != 0) {
-        QWindowSystemInterface::handleWheelEvent(window, QPoint(), QPoint(), event.GetTicks().x(), Qt::Horizontal);
+        QWindowSystemInterface::handleWheelEvent(window, QPoint(), currentMouseGlobalPos, event.GetTicks().x(), Qt::Horizontal);
     }
     if (event.GetTicks().y()!= 0) {
-        QWindowSystemInterface::handleWheelEvent(window,  QPoint(), QPoint(), event.GetTicks().x(), Qt::Vertical);
+        QWindowSystemInterface::handleWheelEvent(window,  QPoint(), currentMouseGlobalPos, event.GetTicks().y(), Qt::Vertical);
     }
     return true;
 }

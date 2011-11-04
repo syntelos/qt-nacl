@@ -28,6 +28,7 @@ public:
     QWidget *m_window;
 private:
     uint32_t currentPepperKey;
+    QPoint currentMouseGlobalPos;
 };
 
 #endif
