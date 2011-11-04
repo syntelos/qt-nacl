@@ -61,12 +61,15 @@ void QPepperCompositor::setGeometry(QPlatformWindow *window, QRect geometry)
 void QPepperCompositor::setVisible(QPlatformWindow *window, bool visible)
 {
     QPepperCompositedWindow &compositedWindow = m_compositedWindows[window->widget()];
-    bool needComposit = (compositedWindow.visible != visible);
+    if (compositedWindow.visible == visible)
+        return;
+
+    // qDebug() << "setVisible " << this << visible;
+
     compositedWindow.visible = visible;
-    if (needComposit) {
-        compositedWindow.flushPending = true;
-        maybeComposit();
-    }
+    compositedWindow.flushPending = true;
+    compositedWindow.damage = compositedWindow.geometry;
+    maybeComposit();
 }
 
 void QPepperCompositor::raise(QPlatformWindow *window)
@@ -88,7 +91,11 @@ void QPepperCompositor::setFrameBuffer(QWindowSurface *surface, QImage *frameBuf
 
 void QPepperCompositor::flush(QWindowSurface *surface)
 {
-    m_compositedWindows[surface->window()].flushPending = true;
+    // qDebug() << "flush" << surface->window();
+
+    QPepperCompositedWindow &compositedWindow = m_compositedWindows[surface->window()];
+    compositedWindow.flushPending = true;
+    compositedWindow.damage = compositedWindow.geometry;
     maybeComposit();
 }
 
@@ -112,7 +119,8 @@ void QPepperCompositor::setPepperInstance(QPepperInstance *pepperInstance)
 void QPepperCompositor::setRasterFrameBuffer(QImage *frameBuffer)
 {
     m_frameBuffer = frameBuffer;
-    m_frameBuffer->fill(Qt::green);
+    //m_frameBuffer->fill(Qt::green);
+    m_frameBuffer->fill(Qt::transparent);
 }
 
 // called from the Qt thread
@@ -164,12 +172,40 @@ void QPepperCompositor::composit()
     m_pepperInstance->waitForFlushed();
 
     QPainter p(m_frameBuffer);
+
+    // ### for now, clear the entire frame.
+    p.fillRect(QRect(QPoint(0,0), m_frameBuffer->size()), QBrush(Qt::transparent));
+
+    QRegion damaged;
     foreach (QWidget *window, m_windowStack) {
         QPepperCompositedWindow &compositedWindow = m_compositedWindows[window];
-        if (compositedWindow.visible)
-            p.drawImage(compositedWindow.geometry.topLeft(), *compositedWindow.frameBuffer);
-        compositedWindow.flushPending = false;
+     //   qDebug() << "unite" << compositedWindow.damage;
+        damaged = damaged.united(compositedWindow.damage);
+    //    qDebug() << "res" << damaged;
     }
+
+    //foreach (const QRect &rect, damaged.rects()) {
+    //    p.fillRect(rect, QBrush(Qt::transparent));
+    //    qDebug() << "fill" << rect;
+    //}
+
+    QRegion painted;
+
+    foreach (QWidget *window, m_windowStack) {
+        QPepperCompositedWindow &compositedWindow = m_compositedWindows[window];
+
+        if (compositedWindow.visible) {
+            p.drawImage(compositedWindow.geometry.topLeft(), *compositedWindow.frameBuffer);
+            painted.unite(compositedWindow.damage);
+        }
+
+        compositedWindow.flushPending = false;
+        compositedWindow.damage = QRect();
+    }
+
+    //QRegion needsClear = damaged - painted;
+    //qDebug() << "needsclear" << needsClear;
+
     m_pepperInstance->flush();
 }
 

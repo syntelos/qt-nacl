@@ -59,7 +59,7 @@ bool QPepperInstance::Init(uint32_t argc, const char* argn[], const char* argv[]
         }
     }
 
-    qDebug() << "PepperInstance::init" << m_windowId;
+    // qDebug() << "PepperInstance::init" << m_windowId;
 
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE | PP_INPUTEVENT_CLASS_WHEEL | PP_INPUTEVENT_CLASS_KEYBOARD);
     QtPepperMain::get()->setInstance(this); // ### pass arguments?
@@ -75,7 +75,7 @@ void QPepperInstance::DidChangeView(const Rect& geometry, const Rect& clip)
         return;
     m_currentGeometry = geometry;
 
-    qDebug() << "QPepperInstance::DidChangeView" << m_windowId << geometry.size().width() << geometry.size().height();
+   // qDebug() << "QPepperInstance::DidChangeView" << m_windowId << geometry.size().width() << geometry.size().height();
 
     QtPepperMain *pepperMain = QtPepperMain::get();
 

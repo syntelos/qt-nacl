@@ -30,7 +30,7 @@ QPepperWindowSurface::QPepperWindowSurface(QWidget *window)
     m_isInPaint = false;
     m_compositor = &QtPepperMain::get()->m_compositor;
 
-    qDebug() << "QPepperWindowSurface::QPepperWindowSurface" << m_platformWindow->windowId();
+   // qDebug() << "QPepperWindowSurface::QPepperWindowSurface" << m_platformWindow->windowId();
 
     m_compositor->setWindowSurface(m_platformWindow, this);
 
@@ -48,11 +48,12 @@ void QPepperWindowSurface::createFrameBuffer(QSize size)
 {
     if (!this->size().isValid())
         return;
-    qDebug() << "QPepperWindowSurface::createFrameBuffer" << size;
+   // qDebug() << "QPepperWindowSurface::createFrameBuffer" << size;
 
     if (m_ownsFrameBuffer)
         delete m_frameBuffer;
     m_frameBuffer = new QImage(size, QImage::Format_ARGB32_Premultiplied);
+    m_frameBuffer->fill(Qt::red); // should never be seen
     m_ownsFrameBuffer = true;
 
     m_compositor->setFrameBuffer(this,  m_frameBuffer);
@@ -87,7 +88,7 @@ QPaintDevice *QPepperWindowSurface::paintDevice()
 
 void QPepperWindowSurface::beginPaint(const QRegion &region)
 {
-//    qDebug() << "QPepperWindowSurface::beginPaint";
+    // qDebug() << "QPepperWindowSurface::beginPaint" << window();
     m_isInPaint = true;
 
     m_compositor->waitForFlushed(this);
@@ -117,7 +118,7 @@ void QPepperWindowSurface::flush(QWidget *widget, const QRegion &region, const Q
     Q_UNUSED(region);
     Q_UNUSED(offset);
 
-   // qDebug() << "QPepperWindowSurface::flush" << QtModule::getCore()->IsMainThread();
+    //qDebug() << "QPepperWindowSurface::flush" << this->window();
 
     m_compositor->flush(this);
 }
@@ -133,7 +134,5 @@ void QPepperWindowSurface::resize(const QSize &size)
     if (!m_frameBuffer || size != m_frameBuffer->size())
         createFrameBuffer(size);
 }
-
-
 
 QT_END_NAMESPACE

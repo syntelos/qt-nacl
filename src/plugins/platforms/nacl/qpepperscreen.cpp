@@ -19,9 +19,13 @@ QPepperScreen::QPepperScreen()
 QRect QPepperScreen::geometry() const
 {
     QPepperInstance *instance = QtPepperMain::get()->m_mainInstance;
+
     if (!instance)
         return QRect();
-    return toQRect(QtPepperMain::get()->m_mainInstance->m_currentGeometry);
+
+    QRect globalGeometry = toQRect(QtPepperMain::get()->m_mainInstance->m_currentGeometry);
+    QRect localGeometry = QRect(QPoint(0, 0), globalGeometry.size());
+    return localGeometry;
 }
 
 QT_END_NAMESPACE

@@ -20,7 +20,7 @@ QPepperPlatformWindow::QPepperPlatformWindow(QWidget *windowWidget, bool isFirst
 {
     m_windowId = isFirstWindow ? 0 : quint32(this);
     m_compositor->addRasterWindow(this);
-    qDebug() << "QPepperPlatformWindow::QPepperPlatformWindow" << m_windowId << isFirstWindow;
+    // qDebug() << "QPepperPlatformWindow::QPepperPlatformWindow" << m_windowId << isFirstWindow;
 }
 
 QPepperPlatformWindow::~QPepperPlatformWindow()
@@ -30,7 +30,7 @@ QPepperPlatformWindow::~QPepperPlatformWindow()
 
 QPlatformGLContext *QPepperPlatformWindow::glContext() const
 {
-    qDebug() << "QPepperPlatformWindow::glContext";
+    // qDebug() << "QPepperPlatformWindow::glContext";
 
     if (m_pepperGlContext == 0)
         m_pepperGlContext = new QPepperGLContext(QtPepperMain::get()->instance());
@@ -60,6 +60,7 @@ void QPepperPlatformWindow::lower()
 
 void QPepperPlatformWindow::setGeometry(const QRect &rect)
 {
+    // qDebug() << "setGeometry" << rect;
     m_compositor->setGeometry(this, rect);
 }
 

@@ -15,6 +15,7 @@ public:
     QImage *frameBuffer;
     QPlatformWindow *parentWindow;
     QRect geometry;
+    QRect damage;
     bool flushPending;
     bool visible;
     QList<QWidget *> childWindows;

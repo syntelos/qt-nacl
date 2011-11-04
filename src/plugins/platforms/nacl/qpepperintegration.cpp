@@ -48,8 +48,8 @@ QPixmapData *QPepperIntegration::createPixmapData(QPixmapData::PixelType type) c
 QPlatformWindow *QPepperIntegration::createPlatformWindow(QWidget *widget, WId winId) const
 {
     Q_UNUSED(winId);
-    qDebug() << "QPepperIntegration::createPlatformWindow" << widget << widget->parent()
-             << widget->objectName() << widget->geometry() << m_firstWindowCreated;
+    //qDebug() << "QPepperIntegration::createPlatformWindow" << widget << widget->parent()
+    //         << widget->objectName() << widget->geometry() << m_firstWindowCreated;
 
     QPepperPlatformWindow *platformWindow = new QPepperPlatformWindow(widget, !m_firstWindowCreated);
     platformWindow->m_trackInstanceSize = true;
