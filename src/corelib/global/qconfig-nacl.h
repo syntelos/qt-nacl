@@ -50,9 +50,6 @@
 #endif
 
 /* Dialogs */
-#ifndef QT_NO_FILEDIALOG
-#  define QT_NO_FILEDIALOG
-#endif
 #ifndef QT_NO_PRINTDIALOG
 #  define QT_NO_PRINTDIALOG
 #endif
@@ -62,20 +59,8 @@
 
 
 /* File I/O */
-#ifndef QT_NO_FILESYSTEMWATCHER
-#  define QT_NO_FILESYSTEMWATCHER
-#endif
 #ifndef QT_NO_FSFILEENGINE
 #  define QT_NO_FSFILEENGINE
-#endif
-#ifndef QT_NO_FILESYSTEMMODEL
-#  define QT_NO_FILESYSTEMMODEL
-#endif
-#ifndef QT_NO_FILESYSTEMMODEL
-#  define QT_NO_FILESYSTEMMODEL
-#endif
-#ifndef QT_NO_FILESYSTEMITERATOR
-#  define QT_NO_FILESYSTEMITERATOR
 #endif
 #ifndef QT_NO_PROCESS
 #  define QT_NO_PROCESS
@@ -120,16 +105,7 @@
 #  define QT_NO_TEXTCODECPLUGIN
 #endif
 
-/* ItemViews */
-
-#ifndef QT_NO_DIRMODEL
-#  define QT_NO_DIRMODEL
-#endif
-
 /* Kernel */
-#ifndef QT_NO_DRAGANDDROP
-#  define QT_NO_DRAGANDDROP
-#endif
 #ifndef QT_NO_EFFECTS
 #  define QT_NO_EFFECTS
 #endif
@@ -147,9 +123,6 @@
 #endif
 #ifndef QT_NO_SYSTEMSEMAPHORE
 #  define QT_NO_SYSTEMSEMAPHORE
-#endif
-#ifndef QT_NO_TABLETEVENT
-#  define QT_NO_TABLETEVENT
 #endif
 #ifndef QT_NO_CRASHHANDLER
 #  define QT_NO_CRASHHANDLER
@@ -273,9 +246,6 @@
 #endif
 #ifndef QT_NO_STYLE_CDE
 #  define QT_NO_STYLE_CDE
-#endif
-#ifndef QT_NO_STYLE_STYLESHEET
-#  define QT_NO_STYLE_STYLESHEET
 #endif
 #ifndef QT_NO_STYLE_WINDOWSCE
 #  define QT_NO_STYLE_WINDOWSCE

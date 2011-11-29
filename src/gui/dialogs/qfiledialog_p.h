@@ -140,7 +140,10 @@ public:
     QLineEdit *lineEdit() const;
 
     int maxNameLength(const QString &path) {
-#if defined(Q_OS_UNIX)
+#ifdef Q_OS_NACL
+        Q_UNUSED(path);
+        return -1;
+#elif defined(Q_OS_UNIX)
         return ::pathconf(QFile::encodeName(path).data(), _PC_NAME_MAX);
 #elif defined(Q_OS_WIN)
 #ifndef Q_OS_WINCE

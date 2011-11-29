@@ -207,9 +207,20 @@ int rmdir(const char *)
     return 0;
 }
 
+uid_t getuid()
+{
+    return 0;
+}
+
+gid_t getgid()
+{
+    return 0;
+}
+
 } // Extern C
 
 int select(int, fd_set *, fd_set *, fd_set *, struct timeval *)
 {
     return 0;
 }
+

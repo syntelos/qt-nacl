@@ -864,6 +864,9 @@ void QFileDialog::selectFile(const QString &filename)
 #ifdef Q_OS_UNIX
 Q_AUTOTEST_EXPORT QString qt_tildeExpansion(const QString &path, bool *expanded = 0)
 {
+#ifdef Q_OS_NACL
+    return path;
+#else
     if (expanded != 0)
         *expanded = false;
     if (!path.startsWith(QLatin1Char('~')))
@@ -900,6 +903,7 @@ Q_AUTOTEST_EXPORT QString qt_tildeExpansion(const QString &path, bool *expanded 
     if (expanded != 0)
         *expanded = true;
     return ret;
+#endif // !Q_OS_NACL
 }
 #endif
 
