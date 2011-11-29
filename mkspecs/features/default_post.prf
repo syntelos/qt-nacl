@@ -122,8 +122,8 @@ contains(CONFIG, lupdate_run):contains(CONFIG, localize_deployment) {
 }
 
 # Add the ppapi-plugin files to the build for nacl applications
-# (and not for libraries and the host tools)
-contains(QT_CONFIG, nacl):contains(TEMPLATE, app):!contains(TARGET, moc):!contains(TARGET, uic):!contains(TARGET, rcc):!contains(TARGET, uic3){
+# (and not for config tests, libraries and the host tools)
+contains(CONFIG, qt):contains(QT_CONFIG, nacl):contains(TEMPLATE, app):!contains(TARGET, moc):!contains(TARGET, uic):!contains(TARGET, rcc):!contains(TARGET, uic3){
     load(ppapiplugin)
 
     # Set target extention
