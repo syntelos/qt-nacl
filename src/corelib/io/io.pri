@@ -77,7 +77,11 @@ win32 {
         SOURCES += io/qfilesystemiterator_win.cpp
 } else:unix {
         SOURCES += io/qfsfileengine_unix.cpp
-        symbian {
+
+        nacl {
+            SOURCES += io/qfilesystemengine_unix.cpp
+            SOURCES += io/qfilesystemiterator_nacl.cpp
+        } else : symbian {
             SOURCES += io/qfilesystemengine_symbian.cpp
             SOURCES += io/qprocess_symbian.cpp
             SOURCES += io/qfilesystemiterator_symbian.cpp
