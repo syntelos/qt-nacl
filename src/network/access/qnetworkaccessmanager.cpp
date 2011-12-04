@@ -57,7 +57,9 @@
 #include "qnetworkaccesscachebackend_p.h"
 #include "qnetworkreplydataimpl_p.h"
 #include "qnetworkreplyfileimpl_p.h"
+#ifdef Q_OS_NACL
 #include "qnetworkreplypepperimpl_p.h"
+#endif
 
 #include "QtCore/qbuffer.h"
 #include "QtCore/qurl.h"

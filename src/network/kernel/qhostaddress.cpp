@@ -514,11 +514,13 @@ QHostAddress::QHostAddress(const QString &address)
 QHostAddress::QHostAddress(const struct sockaddr *sockaddr)
     : d(new QHostAddressPrivate)
 {
-//    if (sockaddr->sa_family == AF_INET)
-//        setAddress(htonl(((sockaddr_in *)sockaddr)->sin_addr.s_addr));
+#ifndef Q_OS_NACL
+    if (sockaddr->sa_family == AF_INET)
+        setAddress(htonl(((sockaddr_in *)sockaddr)->sin_addr.s_addr));
 #ifndef QT_NO_IPV6
     else if (sockaddr->sa_family == AF_INET6)
         setAddress(((qt_sockaddr_in6 *)sockaddr)->sin6_addr.qt_s6_addr);
+#endif
 #endif
 }
 
@@ -665,11 +667,13 @@ bool QHostAddress::setAddress(const QString &address)
 void QHostAddress::setAddress(const struct sockaddr *sockaddr)
 {
     clear();
-//    if (sockaddr->sa_family == AF_INET)
-//        setAddress(htonl(((sockaddr_in *)sockaddr)->sin_addr.s_addr));
+#ifndef Q_OS_NACL
+    if (sockaddr->sa_family == AF_INET)
+        setAddress(htonl(((sockaddr_in *)sockaddr)->sin_addr.s_addr));
 #ifndef QT_NO_IPV6
     else if (sockaddr->sa_family == AF_INET6)
         setAddress(((qt_sockaddr_in6 *)sockaddr)->sin6_addr.qt_s6_addr);
+#endif
 #endif
 }
 
