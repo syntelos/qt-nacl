@@ -1,5 +1,5 @@
 {
   "program": {
-    "x86-32": {"url": "APPNAME.nexe"}
+    "ARCH": {"url": "APPNAME.nexe"}
   }
 }

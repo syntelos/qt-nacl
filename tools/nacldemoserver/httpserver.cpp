@@ -255,6 +255,23 @@ void Server::serveResponseFromPath(HttpResponse *response, QString path)
             qDebug() << "Resource file has no contents" << nmfFile.fileName();
         QString appName = QFileInfo(path).fileName();
         appName.chop(4);
+
+        // Figure out which arch we are serving, set correct arch in nmf file
+        QString nexePath = path;
+        if (nexePath.startsWith("/"))
+            nexePath.remove(0,1);
+        nexePath.chop(3); // remove "nmf"
+        nexePath.append("nexe");
+        QProcess p;
+        p.start(QLatin1String("/usr/bin/file"), QStringList() << findCanonicalPath(nexePath));
+        p.waitForFinished();
+        QByteArray fileOutput = p.readAll();
+        if (fileOutput.contains("x86-64"))
+            fileContents.replace("ARCH", "x86-64");
+        else
+            fileContents.replace("ARCH", "x86");
+
+        // Set the nexe name
         fileContents.replace("APPNAME", appName.toAscii());
         response->setBody(fileContents);
     }
