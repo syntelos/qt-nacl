@@ -71,13 +71,21 @@ void QPepperInstance::DidChangeView(const Rect& geometry, const Rect& clip)
 {
     Q_UNUSED(clip);
 
+    QtPepperMain *pepperMain = QtPepperMain::get();
+    if (!pepperMain->isQtStarted()) {
+        // Start the main Qt thread. The thread will call main() in
+        // the application code, construct the QApplication object,
+        // load the pepper lighthouse plugin, create the GUI and
+        // then eventually go to sleep somewhere in the lighthouse event
+        // dispatcher.
+        pepperMain->startQtMainThread();
+    }
+
     if (geometry.size() == m_currentGeometry.size())
         return;
     m_currentGeometry = geometry;
 
    // qDebug() << "QPepperInstance::DidChangeView" << m_windowId << geometry.size().width() << geometry.size().height();
-
-    QtPepperMain *pepperMain = QtPepperMain::get();
 
     // Delete the previous framebuffer and graphics context. Park the Qt
     // thread first, to make sure we don't remove the frame buffer while

@@ -41,14 +41,6 @@ bool QtModule::Init()
     globalCore = core();
     bool glOk = glInitializePPAPI(get_browser_interface()) == GL_TRUE;
 
-    QtPepperMain *pepperMain = QtPepperMain::get();
-
-    // Start the main Qt thread. The thread will call main() in
-    // the application code, construct the QApplication object,
-    // load the pepper lighthouse plugin, create the GUI and
-    // then eventually go to sleep somewhere in the lighthouse event
-    // dispatcher.
-    pepperMain->startQtMainThread();
     return true;
 }
 
