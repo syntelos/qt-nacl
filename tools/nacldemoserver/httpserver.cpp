@@ -269,7 +269,7 @@ void Server::serveResponseFromPath(HttpResponse *response, QString path)
         if (fileOutput.contains("x86-64"))
             fileContents.replace("ARCH", "x86-64");
         else
-            fileContents.replace("ARCH", "x86");
+            fileContents.replace("ARCH", "x86-32");
 
         // Set the nexe name
         fileContents.replace("APPNAME", appName.toAscii());
