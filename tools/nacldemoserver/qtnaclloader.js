@@ -43,12 +43,14 @@ function qtNaClLoaderLoadNexe(name)
     this.container.appendChild(this.status);
 
     if (!this.isValidBrowser) {
-        status.innerHTML = "Browser version check failed, Chrome version "
-                            + this.minimumChromeVersion +
-                            " or higher is required.";
+        this.status.innerHTML =
+                            "Browser version check failed, Chrome version "
+                            + this.minimumChromeVersion
+                            +" or higher with the NaCl plugin enabled is required."
+                            +" Status: " + this.browserSupportStatus;
         return;
     }
-    status.innerHTML = "Loading";
+    this.status.innerHTML = "Loading";
 
     // Initialize the NaCl embed element.
     this.nacl.setAttribute('id', name);
